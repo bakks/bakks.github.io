@@ -82,33 +82,62 @@ func (this *Matrix) Print() {
   }
 }
 
-type Point struct {
+type D3Point struct {
   Matrix
 }
 
-func (this *Point) X() float64 {
+func (this *D3Point) X() float64 {
   return this.elements[0]
 }
 
-func (this *Point) Y() float64 {
+func (this *D3Point) SetX(x float64) {
+  this.elements[0] = x
+}
+
+func (this *D3Point) Y() float64 {
   return this.elements[1]
 }
 
-func (this *Point) Z() float64 {
+func (this *D3Point) SetY(y float64) {
+  this.elements[0] = y
+}
+
+func (this *D3Point) Z() float64 {
   return this.elements[2]
 }
 
-func NewPoint(x, y, z float64) *Point {
-  arr := make([]float64, 3)
-  arr[0] = x
-  arr[1] = y
-  arr[2] = z
+func (this *D3Point) SetZ(z float64) {
+  this.elements[0] = z
+}
 
-  return &Point{
+func NewD3Point(x, y, z float64) *Point {
+  return &D3Point{
     Matrix{
       n: 1,
       m: 3,
       elements: []float64{x, y, z,},
+    },
+  }
+}
+
+type D2Point struct {
+  Matrix
+}
+
+func (this *D2Point) X() float64 {
+  return this.elements[0]
+}
+
+func (this *D2Point) Y() float64 {
+  return this.elements[1]
+}
+
+func NewD2Point(x, y float64) *Point {
+  return &D3Point{
+    Matrix{
+      n: 1,
+      m: 2,
+      elements: []float64{x, y}
     },
   }
 }
@@ -120,7 +149,6 @@ func MultiplyMatrices(a, b *Matrix) *Matrix {
 
   n := a.N()
   m := a.M()
-  //p := b.M()
   x := NewEmptyMatrix(m, m)
 
   for i := uint(0); i < m; i++ {
@@ -136,6 +164,37 @@ func MultiplyMatrices(a, b *Matrix) *Matrix {
   }
 
   return x
+}
+
+func AddMatrices(a, b *Matrix) *Matrix {
+  if a.M() != b.M() || a.N() != b.N() {
+  }
+}
+
+type Edge struct {
+  start *D3Point
+  end *D3Point
+}
+
+type Model struct {
+  points []*D3Point
+  edges []Edge
+}
+
+func RotatePointAroundXAxis(point *D3Point, angle float64) {
+  y := point.Y() * math.Cos(angle) - point.Z() * math.Sin(angle)
+  z := point.Y() * math.Sin(angle) + point.Z() * math.Cos(angle)
+
+  point.SetY(y)
+  point.SetZ(z)
+}
+
+func RotatePointAroundYAxis(point *D3Point, angle float64) {
+  x := point.Z() * math.Sin(angle) + point.X() * math.Cos(angle)
+  z := point.Z() * math.Cos(angle) + point.X() * math.Sin(angle)
+
+  point.SetX(x)
+  point.SetZ(z)
 }
 
 func main() {

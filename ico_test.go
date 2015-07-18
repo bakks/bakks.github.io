@@ -1,7 +1,6 @@
 package main
 
 import "testing"
-import "fmt"
 
 func TestMultiplyMatrices(t *testing.T) {
   // test identity matrix multiplied by itself
@@ -11,7 +10,9 @@ func TestMultiplyMatrices(t *testing.T) {
   }
   a := NewMatrix(aVal)
 
-  if !MultiplyMatrices(a, a).Equals(a) {
+  x := MultiplyMatrices(a, a)
+  if !x.Equals(a) {
+    x.Print()
     t.Fatal("one")
   }
 
@@ -22,8 +23,9 @@ func TestMultiplyMatrices(t *testing.T) {
   }
   b := NewMatrix(bVal)
 
-  if !MultiplyMatrices(a, b).Equals(b) {
-    MultiplyMatrices(a, b).Print()
+  x = MultiplyMatrices(a, b)
+  if !x.Equals(b) {
+    x.Print()
     t.Fatal("two")
   }
 
@@ -51,16 +53,37 @@ func TestMultiplyMatrices(t *testing.T) {
   }
   e := NewMatrix(eVal)
 
-  c.Print()
-  fmt.Printf("\n")
-  d.Print()
-  fmt.Printf("\n")
-  e.Print()
-  fmt.Printf("\n")
-
-  if !MultiplyMatrices(c, d).Equals(e) {
-    MultiplyMatrices(c, d).Print()
+  x = MultiplyMatrices(c, d)
+  if !x.Equals(e) {
+    x.Print()
     t.Fatal("three")
+  }
+}
+
+func TestAddMatrices(t *testing.T) {
+  aVal := [][]float64 {
+    []float64{1, 2, 3},
+    []float64{4, 5, 6},
+  }
+
+  bVal := [][]float64 {
+    []float64{7, 8, 9},
+    []float64{10, 11, 12},
+  }
+
+  cVal := [][]float64 {
+    []float64{8, 10, 12},
+    []float64{14, 16, 18},
+  }
+
+  a := NewMatrix(aVal)
+  b := NewMatrix(bVal)
+  c := NewMatrix(cVal)
+
+  x := AddMatrices(a, b)
+  if !x.Equals(c) {
+    x.Print()
+    t.Fatal("Add matrices")
   }
 }
 

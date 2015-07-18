@@ -7,6 +7,7 @@
 package main
 
 import "fmt"
+import "math"
 
 type Matrix struct {
   n uint
@@ -110,7 +111,7 @@ func (this *D3Point) SetZ(z float64) {
   this.elements[0] = z
 }
 
-func NewD3Point(x, y, z float64) *Point {
+func NewD3Point(x, y, z float64) *D3Point {
   return &D3Point{
     Matrix{
       n: 1,
@@ -132,12 +133,12 @@ func (this *D2Point) Y() float64 {
   return this.elements[1]
 }
 
-func NewD2Point(x, y float64) *Point {
-  return &D3Point{
+func NewD2Point(x, y float64) *D2Point {
+  return &D2Point{
     Matrix{
       n: 1,
       m: 2,
-      elements: []float64{x, y}
+      elements: []float64{x, y},
     },
   }
 }
@@ -169,6 +170,18 @@ func MultiplyMatrices(a, b *Matrix) *Matrix {
 func AddMatrices(a, b *Matrix) *Matrix {
   if a.M() != b.M() || a.N() != b.N() {
   }
+
+  n := a.N()
+  m := a.M()
+  x := NewEmptyMatrix(a.N(), a.M())
+
+  for j := uint(0); j < m; j++ {
+    for i := uint(0); i < n; i++ {
+      x.Put(i, j, a.Get(i, j) + b.Get(i, j))
+    }
+  }
+
+  return x
 }
 
 type Edge struct {

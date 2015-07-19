@@ -11,63 +11,62 @@ import "math"
 import "time"
 
 func OrthographicProjection(point *D3Point, offsetX, offsetZ float64) *D2Point {
-  aVal := [][]float64{
-    {1, 0, 0},
-    {0, 0, 1},
-  }
+	aVal := [][]float64{
+		{1, 0, 0},
+		{0, 0, 1},
+	}
 
-  cVal := [][]float64{
-    {offsetX},
-    {offsetZ},
-  }
+	cVal := [][]float64{
+		{offsetX},
+		{offsetZ},
+	}
 
-  c := NewMatrix(cVal)
-  a := NewMatrix(aVal)
-  x := MultiplyMatrices(a, point.ToMatrix())
-  x = AddMatrices(x, c)
-  return NewD2PointFromMatrix(x)
+	c := NewMatrix(cVal)
+	a := NewMatrix(aVal)
+	x := MultiplyMatrices(a, point.ToMatrix())
+	x = AddMatrices(x, c)
+	return NewD2PointFromMatrix(x)
 }
 
 var BULLET rune = '•'
 
 func round(x float64) int {
-  return int(math.Floor(x + 0.5))
+	return int(math.Floor(x + 0.5))
 }
 
 func ProjectOntoCanvas(model *Model, canvas *Canvas, offsetRow, offsetColumn uint) {
-  offsetX := float64(0)
-  offsetZ := float64(-10)
-  canvasYScale := 1.0
-  canvasXScale := 2.2
+	offsetX := float64(0)
+	offsetZ := float64(-10)
+	canvasYScale := 1.0
+	canvasXScale := 2.2
 
-  for _, point := range model.Points {
-    projection := OrthographicProjection(point, offsetX, offsetZ)
-    y := round(projection.Y() * canvasYScale) + int(offsetRow)
-    x := round(projection.X() * canvasXScale) + int(offsetColumn)
-    if x >= 0 && x < int(canvas.Width()) && y >= 0 && y < int(canvas.Height()) {
-      (*canvas)[y][x] = BULLET
-    }
-  }
+	for _, point := range model.Points {
+		projection := OrthographicProjection(point, offsetX, offsetZ)
+		y := round(projection.Y()*canvasYScale) + int(offsetRow)
+		x := round(projection.X()*canvasXScale) + int(offsetColumn)
+		if x >= 0 && x < int(canvas.Width()) && y >= 0 && y < int(canvas.Height()) {
+			(*canvas)[y][x] = BULLET
+		}
+	}
 }
 
 func main() {
-  width := uint(80)
-  height := uint(40)
-  canvas := NewCanvas(height, width)
-  cube := MakeCube()
-  cube.Scale(4)
+	width := uint(80)
+	height := uint(40)
+	canvas := NewCanvas(height, width)
+	cube := MakeCube()
+	cube.Scale(4)
 
-  for true {
-    cube.RotateAroundXAxis(0.2)
-    cube.RotateAroundYAxis(0.2)
-    xOffset := width / 2
-    yOffset := uint(float64(height) / 1.5)
+	for true {
+		cube.RotateAroundXAxis(0.2)
+		cube.RotateAroundYAxis(0.2)
+		xOffset := width / 2
+		yOffset := uint(float64(height) / 1.5)
 
-    ProjectOntoCanvas(cube, canvas, yOffset, xOffset)
-    canvas.Print()
-    canvas.Clear()
-    time.Sleep(250 * time.Millisecond)
-    fmt.Println("------")
-  }
+		ProjectOntoCanvas(cube, canvas, yOffset, xOffset)
+		canvas.Print()
+		canvas.Clear()
+		time.Sleep(250 * time.Millisecond)
+		fmt.Println("------")
+	}
 }
-

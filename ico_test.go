@@ -36,7 +36,7 @@ func TestMultiplyMatrices(t *testing.T) {
   }
   c := NewMatrix(cVal)
 
-  if c.N() != 3 && c.M() != 2 {
+  if c.Width() != 3 && c.Height() != 2 {
     t.Fatal("row/column mixup")
   }
 
@@ -57,6 +57,24 @@ func TestMultiplyMatrices(t *testing.T) {
   if !x.Equals(e) {
     x.Print()
     t.Fatal("three")
+  }
+
+  fVal := [][]float64 {
+    {1},
+    {1},
+  }
+  f := NewMatrix(fVal)
+
+  gVal := [][]float64 {
+    {122},
+    {293},
+  }
+  g := NewMatrix(gVal)
+
+  x = MultiplyMatrices(e, f)
+  if !x.Equals(g) {
+    x.Print()
+    t.Fatal("four")
   }
 }
 
@@ -85,5 +103,13 @@ func TestAddMatrices(t *testing.T) {
     x.Print()
     t.Fatal("Add matrices")
   }
+}
+
+func TestProjection(t *testing.T) {
+  width := uint(80)
+  height := uint(40)
+  canvas := NewCanvas(height, width)
+  cube := MakeCube()
+  ProjectOntoCanvas(cube, canvas, height / 2, width / 2)
 }
 

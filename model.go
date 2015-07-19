@@ -1,8 +1,8 @@
 package main
 
 type Edge struct {
-	Start *D3Point
-	End   *D3Point
+	P0 *D3Point
+	P1 *D3Point
 }
 
 type Model struct {

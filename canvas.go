@@ -9,7 +9,7 @@ func NewCanvas(rows, columns uint) *Canvas {
 	for i := range x {
 		x[i] = make([]rune, columns)
 		for j := range x[i] {
-			x[i][j] = ' '
+			x[i][j] = BLANK
 		}
 	}
 
@@ -27,13 +27,19 @@ func (this *Canvas) Height() uint {
 func (this *Canvas) Clear() {
 	for j := 0; j < int(this.Height()); j++ {
 		for i := 0; i < int(this.Width()); i++ {
-			(*this)[j][i] = ' '
+			(*this)[j][i] = BLANK
 		}
 	}
 }
 
 func (this *Canvas) Print() {
 	fmt.Print(this.ToString())
+}
+
+func (this *Canvas) Set(y, x int, value rune) {
+	if x >= 0 && x < int(this.Width()) && y >= 0 && y < int(this.Height()) {
+		(*this)[uint(y)][uint(x)] = value
+	}
 }
 
 func (this *Canvas) ToString() string {

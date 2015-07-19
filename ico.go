@@ -55,18 +55,18 @@ func main() {
 	height := uint(40)
 	canvas := NewCanvas(height, width)
 	cube := MakeCube()
-	cube.Scale(4)
+	cube.Scale(6)
 
 	for true {
-		cube.RotateAroundXAxis(0.2)
-		cube.RotateAroundYAxis(0.2)
+		cube.RotateAroundXAxis(0.02)
+		cube.RotateAroundYAxis(0.06)
 		xOffset := width / 2
 		yOffset := uint(float64(height) / 1.5)
 
 		ProjectOntoCanvas(cube, canvas, yOffset, xOffset)
 		canvas.Print()
 		canvas.Clear()
-		time.Sleep(250 * time.Millisecond)
+		time.Sleep(50 * time.Millisecond)
 		fmt.Println("------")
 	}
 }

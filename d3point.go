@@ -64,8 +64,8 @@ func (this *D3Point) RotateAroundXAxis(angle float64) {
 }
 
 func (this *D3Point) RotateAroundYAxis(angle float64) {
-	x := this.Z()*math.Sin(angle) - this.X()*math.Cos(angle)
-	z := this.Z()*math.Cos(angle) + this.X()*math.Sin(angle)
+	x := this.Z()*math.Sin(angle) + this.X()*math.Cos(angle)
+	z := this.Z()*math.Cos(angle) - this.X()*math.Sin(angle)
 
 	this.SetX(x)
 	this.SetZ(z)

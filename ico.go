@@ -9,6 +9,7 @@ package main
 import "fmt"
 import "math"
 import "time"
+import "github.com/nsf/termbox-go"
 
 var POINT rune = '•'
 var EDGE rune = '·'
@@ -111,29 +112,71 @@ func ProjectEdgesOntoCanvas(model *Model, canvas *Canvas, offsetRow, offsetColum
 		y0 := round(p0.Y()*CANVASYSCALE) + int(offsetRow)
 		y1 := round(p1.Y()*CANVASYSCALE) + int(offsetRow)
 		BresenhamProjection(canvas, x0, x1, y0, y1)
-		canvas.Set(y0, x0, POINT)
-		canvas.Set(y1, x1, POINT)
 	}
 }
 
+func initTermbox() chan termbox.Event {
+	err := termbox.Init()
+	if err != nil {
+		panic(err)
+	}
+
+	event_queue := make(chan termbox.Event)
+	go func() {
+		for {
+			event_queue <- termbox.PollEvent()
+		}
+	}()
+
+	return event_queue
+}
+
+func printCanvasToTermbox(canvas *Canvas) {
+	w1 := int(canvas.Width())
+	h1 := int(canvas.Height())
+	termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
+
+	for y := 0; y < h1; y++ {
+		for x := 0; x < w1; x++ {
+			c := canvas.Get(y, x)
+			if c != BLANK {
+				termbox.SetCell(x, y, c, termbox.ColorWhite, termbox.ColorBlack)
+			}
+		}
+	}
+	termbox.Flush()
+}
+
 func main() {
+	fmt.Print("foo")
+	event_queue := initTermbox()
+
 	width := uint(80)
 	height := uint(40)
 	canvas := NewCanvas(height, width)
 	cube := MakeCube()
 	cube.Scale(6)
+	xOffset := int(width) / 2
+	yOffset := int(float64(height) / 1.5)
 
-	for true {
-		cube.RotateAroundXAxis(0.02)
-		cube.RotateAroundYAxis(0.06)
-		xOffset := int(width) / 2
-		yOffset := int(float64(height) / 1.5)
+loop:
+	for {
+		select {
+		case ev := <-event_queue:
+			if ev.Type == termbox.EventKey && ev.Key == termbox.KeyCtrlC {
+				break loop
+			}
+		default:
+			cube.RotateAroundXAxis(0.02)
+			cube.RotateAroundYAxis(0.06)
 
-		ProjectEdgesOntoCanvas(cube, canvas, yOffset, xOffset)
-		//ProjectPointsOntoCanvas(cube, canvas, yOffset, xOffset)
-		canvas.Print()
-		canvas.Clear()
-		time.Sleep(50 * time.Millisecond)
-		fmt.Println("------")
+			ProjectEdgesOntoCanvas(cube, canvas, yOffset, xOffset)
+			ProjectPointsOntoCanvas(cube, canvas, yOffset, xOffset)
+			printCanvasToTermbox(canvas)
+			canvas.Clear()
+			time.Sleep(50 * time.Millisecond)
+		}
 	}
+
+	termbox.Close()
 }

@@ -36,6 +36,10 @@ func (this *Canvas) Print() {
 	fmt.Print(this.ToString())
 }
 
+func (this *Canvas) Get(y, x int) rune {
+	return (*this)[uint(y)][uint(x)]
+}
+
 func (this *Canvas) Set(y, x int, value rune) {
 	if x >= 0 && x < int(this.Width()) && y >= 0 && y < int(this.Height()) {
 		(*this)[uint(y)][uint(x)] = value

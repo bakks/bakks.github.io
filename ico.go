@@ -9,6 +9,8 @@ package main
 import "fmt"
 import "math"
 import "time"
+import "sort"
+//import "strconv"
 import "github.com/nsf/termbox-go"
 
 var POINT rune = '•'
@@ -50,11 +52,24 @@ func sign(x int) int {
 	return -1
 }
 
-func ProjectPointsOntoCanvas(model *Model, canvas *Canvas, offsetRow, offsetColumn int) {
+func contains(point *D3Point, list []*D3Point) bool {
+  for _, x := range list {
+    if x == point {
+      return true
+    }
+  }
+  return false
+}
+
+func ProjectPointsOntoCanvas(model *Model, canvas *Canvas, offsetRow, offsetColumn int, occludedPoints []*D3Point) {
 	offsetX := float64(0)
 	offsetZ := float64(-10)
 
 	for _, point := range model.Points {
+    if occludedPoints != nil && contains(point, occludedPoints) {
+      continue
+    }
+
 		projection := OrthographicProjection(point, offsetX, offsetZ)
 		y := round(projection.Y()*CANVASYSCALE) + offsetRow
 		x := round(projection.X()*CANVASXSCALE) + offsetColumn
@@ -100,11 +115,14 @@ func BresenhamProjection(canvas *Canvas, x0, x1, y0, y1 int) {
 	}
 }
 
-func ProjectEdgesOntoCanvas(model *Model, canvas *Canvas, offsetRow, offsetColumn int) {
+func ProjectEdgesOntoCanvas(model *Model, canvas *Canvas, offsetRow, offsetColumn int, occludedPoints []*D3Point) {
 	offsetX := float64(0)
 	offsetZ := float64(-10)
 
 	for _, edge := range model.Edges {
+    if occludedPoints != nil && (contains(edge.P0, occludedPoints) || contains(edge.P1, occludedPoints)) {
+      continue
+    }
 		p0 := OrthographicProjection(edge.P0, offsetX, offsetZ)
 		p1 := OrthographicProjection(edge.P1, offsetX, offsetZ)
 		x0 := round(p0.X()*CANVASXSCALE) + int(offsetColumn)
@@ -131,6 +149,26 @@ func initTermbox() chan termbox.Event {
 	return event_queue
 }
 
+type ByZ []*D3Point
+
+func (a ByZ) Len() int           { return len(a) }
+func (a ByZ) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a ByZ) Less(i, j int) bool { return a[i].Y() > a[j].Y() }
+
+func cullPointsOnZ(model *Model, n int) []*D3Point {
+  list := make([]*D3Point, len(model.Points))
+  top := make([]*D3Point, n)
+  copy(list, model.Points)
+
+  sort.Sort(ByZ(list))
+
+  for i := 0; i < n && i < len(list); i++ {
+    top = append(top, list[i])
+  }
+
+  return top
+}
+
 func printCanvasToTermbox(canvas *Canvas) {
 	w1 := int(canvas.Width())
 	h1 := int(canvas.Height())
@@ -151,11 +189,11 @@ func main() {
 	fmt.Print("foo")
 	event_queue := initTermbox()
 
-	width := uint(80)
-	height := uint(40)
+	width := uint(120)
+	height := uint(60)
 	canvas := NewCanvas(height, width)
-	cube := MakeCube()
-	cube.Scale(6)
+	model := MakeIcosahedron()
+	model.Scale(10)
 	xOffset := int(width) / 2
 	yOffset := int(float64(height) / 1.5)
 
@@ -167,11 +205,12 @@ loop:
 				break loop
 			}
 		default:
-			cube.RotateAroundXAxis(0.02)
-			cube.RotateAroundYAxis(0.06)
+			model.RotateAroundXAxis(0.008)
+			model.RotateAroundYAxis(0.03)
 
-			ProjectEdgesOntoCanvas(cube, canvas, yOffset, xOffset)
-			ProjectPointsOntoCanvas(cube, canvas, yOffset, xOffset)
+      occludedPoints := cullPointsOnZ(model, 0)
+			ProjectEdgesOntoCanvas(model, canvas, yOffset, xOffset, occludedPoints)
+			ProjectPointsOntoCanvas(model, canvas, yOffset, xOffset, occludedPoints)
 			printCanvasToTermbox(canvas)
 			canvas.Clear()
 			time.Sleep(50 * time.Millisecond)

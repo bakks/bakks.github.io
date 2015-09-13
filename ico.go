@@ -208,9 +208,8 @@ loop:
 			model.RotateAroundXAxis(0.008)
 			model.RotateAroundYAxis(0.03)
 
-      occludedPoints := cullPointsOnZ(model, 0)
-			ProjectEdgesOntoCanvas(model, canvas, yOffset, xOffset, occludedPoints)
-			ProjectPointsOntoCanvas(model, canvas, yOffset, xOffset, occludedPoints)
+			ProjectEdgesOntoCanvas(model, canvas, yOffset, xOffset, nil)
+			ProjectPointsOntoCanvas(model, canvas, yOffset, xOffset, nil)
 			printCanvasToTermbox(canvas)
 			canvas.Clear()
 			time.Sleep(50 * time.Millisecond)

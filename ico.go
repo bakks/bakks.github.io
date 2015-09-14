@@ -60,11 +60,11 @@ func contains(point *D3Point, list []*D3Point) bool {
   return false
 }
 
-func ProjectPointsOntoCanvas(model *Model, canvas *Canvas, offsetRow, offsetColumn int, occludedPoints []*D3Point) {
+func ProjectPointsOntoCanvas(points []*D3Point, canvas *Canvas, offsetRow, offsetColumn int, occludedPoints []*D3Point) {
 	offsetX := float64(0)
 	offsetZ := float64(-10)
 
-	for _, point := range model.Points() {
+	for _, point := range points {
     if occludedPoints != nil && contains(point, occludedPoints) {
       continue
     }
@@ -114,11 +114,11 @@ func BresenhamProjection(canvas *Canvas, x0, x1, y0, y1 int) {
 	}
 }
 
-func ProjectEdgesOntoCanvas(model *Model, canvas *Canvas, offsetRow, offsetColumn int, occludedPoints []*D3Point) {
+func ProjectEdgesOntoCanvas(edges []*Edge, canvas *Canvas, offsetRow, offsetColumn int, occludedPoints []*D3Point) {
 	offsetX := float64(0)
 	offsetZ := float64(-10)
 
-	for _, edge := range model.Edges() {
+	for _, edge := range edges {
     if occludedPoints != nil && (contains(edge.P0, occludedPoints) || contains(edge.P1, occludedPoints)) {
       continue
     }
@@ -193,8 +193,9 @@ loop:
 			model.RotateAroundXAxis(0.008)
 			model.RotateAroundYAxis(0.03)
 
-			ProjectEdgesOntoCanvas(model, canvas, yOffset, xOffset, nil)
-			ProjectPointsOntoCanvas(model, canvas, yOffset, xOffset, nil)
+			points, edges := model.CollectPointsAndEdges(true)
+			ProjectEdgesOntoCanvas(edges, canvas, yOffset, xOffset, nil)
+			ProjectPointsOntoCanvas(points, canvas, yOffset, xOffset, nil)
 			printCanvasToTermbox(canvas)
 			canvas.Clear()
 			time.Sleep(50 * time.Millisecond)

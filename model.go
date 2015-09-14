@@ -42,8 +42,8 @@ func (this *Model) invalidatePointsAndEdges() {
 	this.valid = false
 }
 
-func (this *Model) edgesContain(x *Edge) bool {
-	for _, edge := range this.edges {
+func edgesContain(edges []*Edge, x *Edge) bool {
+	for _, edge := range edges {
 		if edge != nil && edge.Equals(x) {
 			return true
 		}
@@ -51,19 +51,26 @@ func (this *Model) edgesContain(x *Edge) bool {
 	return false
 }
 
-func (this *Model) collectPointsAndEdges() {
-	if this.valid {
-		return
-	}
-	this.valid = true
+func (this *Model) facingTowardsCamera(t *Triangle) bool {
+	a := SubMatrices(t.B.ToMatrix(), t.A.ToMatrix())
+	b := SubMatrices(t.C.ToMatrix(), t.A.ToMatrix())
+	c := CrossProductMatrices(a, b)
+	//fmt.Print(c)
+	return c.Get(1, 0) < 0
+}
 
-	points := make(map[*D3Point]bool)
-	this.edges = make([]*Edge, 0)
+func (this *Model) CollectPointsAndEdges(masking bool) ([]*D3Point, []*Edge) {
+	pointsMap := make(map[*D3Point]bool)
+	edges := make([]*Edge, 0)
 
 	for _, triangle := range this.triangles {
-		points[triangle.A] = true
-		points[triangle.B] = true
-		points[triangle.C] = true
+		if masking && !this.facingTowardsCamera(triangle) {
+			continue
+		}
+
+		pointsMap[triangle.A] = true
+		pointsMap[triangle.B] = true
+		pointsMap[triangle.C] = true
 
 		triEdges := make([]*Edge, 0)
 		triEdges = append(triEdges, &Edge{triangle.A, triangle.B})
@@ -71,51 +78,62 @@ func (this *Model) collectPointsAndEdges() {
 		triEdges = append(triEdges, &Edge{triangle.C, triangle.A})
 
 		for _, edge := range triEdges {
-			if !this.edgesContain(edge) {
-				this.edges = append(this.edges, edge)
+			if !edgesContain(edges, edge) {
+				edges = append(edges, edge)
 			}
 		}
 	}
 
-	this.points = make([]*D3Point, 0)
-	for k, _ := range points {
-		this.points = append(this.points, k)
+	points := make([]*D3Point, 0)
+	for k, _ := range pointsMap {
+		points = append(points, k)
 	}
+
+	return points, edges
+}
+
+func (this *Model) collectModelPointsAndEdges() {
+	if this.valid {
+		return
+	}
+	this.valid = true
+
+	this.points, this.edges = this.CollectPointsAndEdges(false)
 }
 
 func (this *Model) Points() []*D3Point {
-	this.collectPointsAndEdges()
+	this.collectModelPointsAndEdges()
 	return this.points
 }
 
 func (this *Model) Edges() []*Edge {
-	this.collectPointsAndEdges()
+	this.collectModelPointsAndEdges()
 	return this.edges
 }
 
 func (this *Model) Scale(factor float64) {
-	this.collectPointsAndEdges()
+	this.collectModelPointsAndEdges()
 	for i := 0; i < len(this.points) && this.points[i] != nil; i++ {
 		this.points[i].Scale(factor)
 	}
 }
 
 func (this *Model) ScaleDim(xf, yf, zf float64) {
-	this.collectPointsAndEdges()
+	this.collectModelPointsAndEdges()
 	for i := 0; i < len(this.points) && this.points[i] != nil; i++ {
 		this.points[i].ScaleDim(xf, yf, zf)
 	}
 }
 
 func (this *Model) RotateAroundXAxis(angle float64) {
-	this.collectPointsAndEdges()
+	this.collectModelPointsAndEdges()
 	for i := 0; i < len(this.points) && this.points[i] != nil; i++ {
 		this.points[i].RotateAroundXAxis(angle)
 	}
 }
 
 func (this *Model) RotateAroundYAxis(angle float64) {
-	this.collectPointsAndEdges()
+	this.collectModelPointsAndEdges()
 	for i := 0; i < len(this.points) && this.points[i] != nil; i++ {
 		this.points[i].RotateAroundYAxis(angle)
 	}

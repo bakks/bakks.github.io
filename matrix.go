@@ -100,7 +100,7 @@ func MultiplyMatrices(a, b *Matrix) *Matrix {
 	return x
 }
 
-func AddMatrices(a, b *Matrix) *Matrix {
+func addSubMatrices(a, b *Matrix, add bool) *Matrix {
 	if a.Height() != b.Height() || a.Width() != b.Width() {
 		panic("Cannot add matrices of different sizes")
 	}
@@ -109,11 +109,42 @@ func AddMatrices(a, b *Matrix) *Matrix {
 	m := a.Height()
 	x := NewEmptyMatrix(n, m)
 
-	for j := uint(0); j < m; j++ {
-		for i := uint(0); i < n; i++ {
-			x.Put(i, j, a.Get(i, j)+b.Get(i, j))
+	if add {
+		for j := uint(0); j < m; j++ {
+			for i := uint(0); i < n; i++ {
+				x.Put(i, j, a.Get(i, j) + b.Get(i, j))
+			}
+		}
+	} else {
+		for j := uint(0); j < m; j++ {
+			for i := uint(0); i < n; i++ {
+				x.Put(i, j, a.Get(i, j) - b.Get(i, j))
+			}
 		}
 	}
 
 	return x
 }
+
+func AddMatrices(a, b *Matrix) *Matrix {
+	return addSubMatrices(a, b, true)
+}
+
+func SubMatrices(a, b *Matrix) *Matrix {
+	return addSubMatrices(a, b, false)
+}
+
+func CrossProductMatrices(a, b *Matrix) *Matrix {
+	if a.Height() != 3 || b.Height() != 3 || a.Width() != 1 || b.Width() != 1 {
+		panic("Can only crossproduct 2 3x1 matrices")
+	}
+
+	c := NewMatrix([][]float64{
+		{ a.Get(1, 0) * b.Get(2, 0) - a.Get(2, 0) * b.Get(1, 0) },
+		{ (a.Get(0, 0) * b.Get(2, 0) - a.Get(2, 0) * b.Get(0, 0)) * -1 },
+		{ a.Get(0, 0) * b.Get(1, 0) - a.Get(1, 0) * b.Get(0, 0) },
+	})
+
+	return c
+}
+

@@ -105,10 +105,44 @@ func TestAddMatrices(t *testing.T) {
 	}
 }
 
-func TestProjection(t *testing.T) {
-	width := uint(80)
-	height := uint(40)
-	canvas := NewCanvas(height, width)
-	cube := MakeCube()
-	ProjectOntoCanvas(cube, canvas, height/2, width/2)
+func TestCrossProduct(t *testing.T) {
+	aVal := [][]float64{
+		//{3, -3, 1},
+		{3},
+		{-3},
+		{1},
+	}
+
+	bVal := [][]float64{
+		//{4, 9, 2},
+		{4},
+		{9},
+		{2},
+	}
+
+	cVal := [][]float64{
+		//{-15, -2, 39},
+		{-15},
+		{-2},
+		{39},
+	}
+
+	a := NewMatrix(aVal)
+	b := NewMatrix(bVal)
+	c := NewMatrix(cVal)
+
+	x := CrossProductMatrices(a, b)
+	if !x.Equals(c) {
+		x.Print()
+		t.Fatal("Cross product")
+	}
 }
+
+//func TestProjection(t *testing.T) {
+//	width := uint(80)
+//	height := uint(40)
+//	canvas := NewCanvas(height, width)
+//	cube := MakeCube()
+//	ProjectOntoCanvas(cube, canvas, height/2, width/2)
+//}
+

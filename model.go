@@ -38,6 +38,11 @@ func (this *Model) AddTriangle(triangle *Triangle) {
 	this.valid = false
 }
 
+func (this *Model) SetTriangles(triangles []*Triangle) {
+	this.triangles = triangles
+	this.valid = false
+}
+
 func (this *Model) invalidatePointsAndEdges() {
 	this.valid = false
 }

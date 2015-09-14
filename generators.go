@@ -30,9 +30,10 @@ import "math"
 //	return x
 //}
 
-func MakeIcosahedron() *Model {
+func MakeIcosahedron(refines int) *Model {
   x := NewModel()
 	points := make([]*D3Point, 0)
+	triangles := make([]*Triangle, 0)
 
   t := (1.0 + math.Sqrt(5.0)) / 2.0;
 
@@ -49,26 +50,52 @@ func MakeIcosahedron() *Model {
   points = append(points, &D3Point{-t,  0, -1})
   points = append(points, &D3Point{-t,  0,  1})
 
-	x.AddTriangle(NewTriangle(points[ 0], points[11], points[ 5]))
-	x.AddTriangle(NewTriangle(points[ 0], points[ 5], points[ 1]))
-	x.AddTriangle(NewTriangle(points[ 0], points[ 1], points[ 7]))
-	x.AddTriangle(NewTriangle(points[ 0], points[ 7], points[10]))
-	x.AddTriangle(NewTriangle(points[ 0], points[10], points[11]))
-	x.AddTriangle(NewTriangle(points[ 1], points[ 5], points[ 9]))
-	x.AddTriangle(NewTriangle(points[ 5], points[11], points[ 4]))
-	x.AddTriangle(NewTriangle(points[11], points[10], points[ 2]))
-	x.AddTriangle(NewTriangle(points[10], points[ 7], points[ 6]))
-	x.AddTriangle(NewTriangle(points[ 7], points[ 1], points[ 8]))
-	x.AddTriangle(NewTriangle(points[ 3], points[ 9], points[ 4]))
-	x.AddTriangle(NewTriangle(points[ 3], points[ 4], points[ 2]))
-	x.AddTriangle(NewTriangle(points[ 3], points[ 2], points[ 6]))
-	x.AddTriangle(NewTriangle(points[ 3], points[ 6], points[ 8]))
-	x.AddTriangle(NewTriangle(points[ 3], points[ 8], points[ 9]))
-	x.AddTriangle(NewTriangle(points[ 4], points[ 9], points[ 5]))
-	x.AddTriangle(NewTriangle(points[ 2], points[ 4], points[11]))
-	x.AddTriangle(NewTriangle(points[ 6], points[ 2], points[10]))
-	x.AddTriangle(NewTriangle(points[ 8], points[ 6], points[ 7]))
-	x.AddTriangle(NewTriangle(points[ 9], points[ 8], points[ 1]))
+	triangles = append(triangles, NewTriangle(points[ 0], points[11], points[ 5]))
+	triangles = append(triangles, NewTriangle(points[ 0], points[ 5], points[ 1]))
+	triangles = append(triangles, NewTriangle(points[ 0], points[ 1], points[ 7]))
+	triangles = append(triangles, NewTriangle(points[ 0], points[ 7], points[10]))
+	triangles = append(triangles, NewTriangle(points[ 0], points[10], points[11]))
+	triangles = append(triangles, NewTriangle(points[ 1], points[ 5], points[ 9]))
+	triangles = append(triangles, NewTriangle(points[ 5], points[11], points[ 4]))
+	triangles = append(triangles, NewTriangle(points[11], points[10], points[ 2]))
+	triangles = append(triangles, NewTriangle(points[10], points[ 7], points[ 6]))
+	triangles = append(triangles, NewTriangle(points[ 7], points[ 1], points[ 8]))
+	triangles = append(triangles, NewTriangle(points[ 3], points[ 9], points[ 4]))
+	triangles = append(triangles, NewTriangle(points[ 3], points[ 4], points[ 2]))
+	triangles = append(triangles, NewTriangle(points[ 3], points[ 2], points[ 6]))
+	triangles = append(triangles, NewTriangle(points[ 3], points[ 6], points[ 8]))
+	triangles = append(triangles, NewTriangle(points[ 3], points[ 8], points[ 9]))
+	triangles = append(triangles, NewTriangle(points[ 4], points[ 9], points[ 5]))
+	triangles = append(triangles, NewTriangle(points[ 2], points[ 4], points[11]))
+	triangles = append(triangles, NewTriangle(points[ 6], points[ 2], points[10]))
+	triangles = append(triangles, NewTriangle(points[ 8], points[ 6], points[ 7]))
+	triangles = append(triangles, NewTriangle(points[ 9], points[ 8], points[ 1]))
+
+	for _, point := range points {
+		point.NormalizeDistanceToOrigin()
+	}
+
+	for i := 0; i < refines; i++ {
+		newTriangles := make([]*Triangle, 0)
+
+		for _, t := range triangles {
+			a := t.A.GetMiddlePoint(t.B)
+			b := t.B.GetMiddlePoint(t.C)
+			c := t.C.GetMiddlePoint(t.A)
+			a.NormalizeDistanceToOrigin()
+			b.NormalizeDistanceToOrigin()
+			c.NormalizeDistanceToOrigin()
+
+			newTriangles = append(newTriangles, &Triangle{t.A, a, c})
+			newTriangles = append(newTriangles, &Triangle{t.B, b, a})
+			newTriangles = append(newTriangles, &Triangle{t.C, c, b})
+			newTriangles = append(newTriangles, &Triangle{a, b, c})
+		}
+
+		triangles = newTriangles
+	}
+
+	x.SetTriangles(triangles)
 
   return x
 }

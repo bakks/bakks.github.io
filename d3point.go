@@ -70,3 +70,19 @@ func (this *D3Point) RotateAroundYAxis(angle float64) {
 	this.SetX(x)
 	this.SetZ(z)
 }
+
+func (this *D3Point) GetMiddlePoint(that *D3Point) *D3Point {
+	return &D3Point{
+		0.5 * (that.x + this.x),
+		0.5 * (that.y + this.y),
+		0.5 * (that.z + this.z),
+	}
+}
+
+func (this *D3Point) NormalizeDistanceToOrigin() {
+	dist := math.Sqrt(this.x * this.x + this.y * this.y + this.z * this.z)
+	this.x /= dist
+	this.y /= dist
+	this.z /= dist
+}
+

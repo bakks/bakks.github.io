@@ -20,7 +20,7 @@ func NewTriangle(a, b, c *D3Point) *Triangle {
 type Model struct {
 	points    []*D3Point
 	edges     []*Edge
-	Triangles []*Triangle
+	triangles []*Triangle
 	valid     bool
 }
 
@@ -31,6 +31,11 @@ func NewModel() *Model {
 		make([]*Triangle, 0),
 		false,
 	}
+}
+
+func (this *Model) AddTriangle(triangle *Triangle) {
+	this.triangles = append(this.triangles, triangle)
+	this.valid = false
 }
 
 func (this *Model) invalidatePointsAndEdges() {
@@ -55,7 +60,7 @@ func (this *Model) collectPointsAndEdges() {
 	points := make(map[*D3Point]bool)
 	this.edges = make([]*Edge, 0)
 
-	for _, triangle := range this.Triangles {
+	for _, triangle := range this.triangles {
 		points[triangle.A] = true
 		points[triangle.B] = true
 		points[triangle.C] = true

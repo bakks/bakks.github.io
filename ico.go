@@ -9,7 +9,6 @@ package main
 import "fmt"
 import "math"
 import "time"
-import "sort"
 //import "strconv"
 import "github.com/nsf/termbox-go"
 
@@ -65,7 +64,7 @@ func ProjectPointsOntoCanvas(model *Model, canvas *Canvas, offsetRow, offsetColu
 	offsetX := float64(0)
 	offsetZ := float64(-10)
 
-	for _, point := range model.Points {
+	for _, point := range model.Points() {
     if occludedPoints != nil && contains(point, occludedPoints) {
       continue
     }
@@ -119,7 +118,7 @@ func ProjectEdgesOntoCanvas(model *Model, canvas *Canvas, offsetRow, offsetColum
 	offsetX := float64(0)
 	offsetZ := float64(-10)
 
-	for _, edge := range model.Edges {
+	for _, edge := range model.Edges() {
     if occludedPoints != nil && (contains(edge.P0, occludedPoints) || contains(edge.P1, occludedPoints)) {
       continue
     }
@@ -154,20 +153,6 @@ type ByZ []*D3Point
 func (a ByZ) Len() int           { return len(a) }
 func (a ByZ) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a ByZ) Less(i, j int) bool { return a[i].Y() > a[j].Y() }
-
-func cullPointsOnZ(model *Model, n int) []*D3Point {
-  list := make([]*D3Point, len(model.Points))
-  top := make([]*D3Point, n)
-  copy(list, model.Points)
-
-  sort.Sort(ByZ(list))
-
-  for i := 0; i < n && i < len(list); i++ {
-    top = append(top, list[i])
-  }
-
-  return top
-}
 
 func printCanvasToTermbox(canvas *Canvas) {
 	w1 := int(canvas.Width())

@@ -6,6 +6,10 @@ type D3Point struct {
 	x, y, z float64
 }
 
+func NewD3PointFromMatrix(matrix *Matrix) *D3Point {
+	return &D3Point{matrix.Get(0, 0), matrix.Get(0, 1), matrix.Get(0, 2)}
+}
+
 func (this *D3Point) X() float64 {
 	return this.x
 }
@@ -49,10 +53,6 @@ func (this *D3Point) ScaleDim(xf, yf, zf float64) {
 	this.x *= xf
 	this.y *= yf
 	this.z *= zf
-}
-
-func NewD3PointFromMatrix(matrix *Matrix) *D3Point {
-	return &D3Point{matrix.Get(0, 0), matrix.Get(0, 1), matrix.Get(0, 2)}
 }
 
 func (this *D3Point) RotateAroundXAxis(angle float64) {

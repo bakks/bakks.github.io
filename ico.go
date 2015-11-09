@@ -14,6 +14,25 @@ var BLANK rune = ' '
 var CANVASXSCALE float64 = 2.2
 var CANVASYSCALE float64 = 1.0
 
+type Ico struct {
+	Width uint
+	Height uint
+	XOffset int
+	YOffset int
+	Canvas *Canvas
+	Model *Model
+}
+
+func NewIco(width, height uint, xOffset, yOffset int, scale float64) *Ico {
+	ico := &Ico{
+		width, height, xOffset, yOffset,
+		NewCanvas(height, width),
+		MakeIcosahedron(1),
+	}
+	ico.Model.Scale(scale)
+	return ico
+}
+
 func OrthographicProjection(point *D3Point, offsetX, offsetZ float64) *D2Point {
 	aVal := [][]float64{
 		{1, 0, 0},

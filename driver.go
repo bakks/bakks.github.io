@@ -50,13 +50,7 @@ func main() {
 
 	event_queue := initTermbox()
 
-	width := uint(120)
-	height := uint(60)
-	canvas := NewCanvas(height, width)
-	model := MakeIcosahedron(1)
-	model.Scale(30)
-	xOffset := int(width) / 2
-	yOffset := int(float64(height) / 1.5)
+	ico := NewIco(uint(120), uint(60), 120 / 2, int(60.0 / 1.5), 30.0)
 
 loop:
 	for {
@@ -66,14 +60,14 @@ loop:
 				break loop
 			}
 		default:
-			model.RotateAroundXAxis(0.02)
+			ico.Model.RotateAroundXAxis(0.02)
 			//model.RotateAroundYAxis(0.08)
 
-			points, edges := model.CollectPointsAndEdges(true)
-			ProjectEdgesOntoCanvas(edges, canvas, yOffset, xOffset, nil)
-			ProjectPointsOntoCanvas(points, canvas, yOffset, xOffset, nil)
-			printCanvasToTermbox(canvas)
-			canvas.Clear()
+			points, edges := ico.Model.CollectPointsAndEdges(true)
+			ProjectEdgesOntoCanvas(edges, ico.Canvas, ico.YOffset, ico.XOffset, nil)
+			ProjectPointsOntoCanvas(points, ico.Canvas, ico.YOffset, ico.XOffset, nil)
+			printCanvasToTermbox(ico.Canvas)
+			ico.Canvas.Clear()
 			time.Sleep(50 * time.Millisecond)
 		}
 	}

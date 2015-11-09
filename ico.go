@@ -79,12 +79,6 @@ func ProjectPointsOntoCanvas(points []*D3Point, canvas *Canvas, offsetRow, offse
 	}
 }
 
-//FILLS := map[int]rune[] {
-//	0:	 ['|', '|', '|'],
-//	45:	 ['/', '/', '/'],
-//	90:  ['_', '-', '-'],
-//	135: [',', '\\', '`'],
-//]
 var FILLS map[int]rune = map[int]rune{
 	0:	 '|',
 	45:	 '/',

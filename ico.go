@@ -79,12 +79,18 @@ func ProjectPointsOntoCanvas(points []*D3Point, canvas *Canvas, offsetRow, offse
 	}
 }
 
-//FILLS := map[int]int[]{
+//FILLS := map[int]rune[] {
 //	0:	 ['|', '|', '|'],
 //	45:	 ['/', '/', '/'],
 //	90:  ['_', '-', '-'],
 //	135: [',', '\\', '`'],
 //]
+var FILLS map[int]rune = map[int]rune{
+	0:	 '|',
+	45:	 '/',
+	90:  '-',
+	135: '\\',
+}
 
 func pointLineDist(x0, y0, deltaX, deltaY, adj, length float64) float64 {
 	return math.Abs(deltaY * x0 - deltaX * y0 + adj) / length
@@ -92,6 +98,20 @@ func pointLineDist(x0, y0, deltaX, deltaY, adj, length float64) float64 {
 
 func pointDist(x0, y0, x1, y1 float64) float64 {
 	return math.Sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0))
+}
+
+func fillPoints(x0, yStart, inc int, x1, y1, x2, y2, deltaX, deltaY, adj, length float64, canvas *Canvas, maxY int, width float64, edge rune) {
+	for yi := yStart; yi >= 0 && yi <= maxY; yi += inc {
+		lineDist := pointLineDist(float64(x0), float64(yi), deltaX, deltaY, adj, length)
+		pointDist1 := pointDist(float64(x0), float64(yi), x1, y1)
+		pointDist2 := pointDist(float64(x0), float64(yi), x2, y2)
+
+		if lineDist > width || pointDist1 + pointDist2 > length + 2 {
+			return
+		}
+
+		canvas.Set(yi, x0, edge)
+	}
 }
 
 func WideLineProjection(canvas *Canvas, x2, x1, y2, y1, width float64) {
@@ -120,6 +140,12 @@ func WideLineProjection(canvas *Canvas, x2, x1, y2, y1, width float64) {
 	adj := x2 * y1 - y2 * x1
 	length := math.Sqrt((y2 - y1) * (y2 - y1) + (x2 - x1) * (x2 - x1))
 
+	// get edge rune
+	angle := math.Atan(deltaY / deltaX) * 180 / math.Pi + 90
+	key := (round(angle / 45.0) * 45) % 180
+	logger.Printf("(%f,%f) (%f,%f) : %f  %d   %f, %d\n", x1, y1, x2, y2, angle / 8.0, round(angle/8.0), angle, key)
+	edge := FILLS[key]
+
 	var y0 float64
 
 	for x0 := round(x1 - width - 1); x0 <= round(x2 + width + 1) && x0 <= maxX; x0++ {
@@ -130,67 +156,8 @@ func WideLineProjection(canvas *Canvas, x2, x1, y2, y1, width float64) {
 			y0 = y1
 		}
 
-		for yi := round(y0); yi >= 0 && yi <= maxY; yi++ {  // exit condition
-			lineDist := pointLineDist(float64(x0), float64(yi), deltaX, deltaY, adj, length)
-			pointDist1 := pointDist(float64(x0), float64(yi), x1, y1)
-			pointDist2 := pointDist(float64(x0), float64(yi), x2, y2)
-
-			if lineDist > width || pointDist1 + pointDist2 > length + 2 {
-				break
-			}
-
-			canvas.Set(yi, x0, EDGE)
-		}
-
-		for yi := round(y0) - 1; yi >= 0 && yi <= maxY; yi-- {  // exit condition
-			lineDist := pointLineDist(float64(x0), float64(yi), deltaX, deltaY, adj, length)
-			pointDist1 := pointDist(float64(x0), float64(yi), x1, y1)
-			pointDist2 := pointDist(float64(x0), float64(yi), x2, y2)
-
-			if lineDist > width || (pointDist1 + pointDist2) > length + 2 {
-				break
-			}
-
-			canvas.Set(yi, x0, EDGE)
-		}
-	}
-}
-
-func BresenhamProjection(canvas *Canvas, x0, x1, y0, y1 int) {
-	if x1 < x0 {
-		tmpX := x0
-		tmpY := y0
-		x0 = x1
-		y0 = y1
-		x1 = tmpX
-		y1 = tmpY
-	}
-
-	deltaX := x1 - x0
-	deltaY := y1 - y0
-	err := 0.0
-	y := y0
-	errSign := sign(y1 - y0)
-	var deltaErr float64
-
-	if deltaX == 0 {
-		if y0 >= y1 {
-			deltaErr = float64(y0 - y1)
-		} else {
-			deltaErr = float64(y1 - y0)
-		}
-	} else {
-		deltaErr = math.Abs(float64(deltaY) / float64(deltaX))
-	}
-
-	for x := x0; x <= x1; x++ {
-		canvas.Set(y, x, EDGE)
-		err += deltaErr
-		for err >= 0.5 && ((y0 > y1 && y > y1) || (y < y1)) {
-			canvas.Set(y, x, EDGE)
-			y += errSign
-			err -= 1.0
-		}
+		fillPoints(x0, round(y0), 1, x1, y1, x2, y2, deltaX, deltaY, adj, length, canvas, maxY, width, edge)
+		fillPoints(x0, round(y0) - 1, -1, x1, y1, x2, y2, deltaX, deltaY, adj, length, canvas, maxY, width, edge)
 	}
 }
 
@@ -208,7 +175,7 @@ func ProjectEdgesOntoCanvas(edges []*Edge, canvas *Canvas, offsetRow, offsetColu
 		x1 := p1.X()*CANVASXSCALE + float64(offsetColumn)
 		y0 := p0.Y()*CANVASYSCALE + float64(offsetRow)
 		y1 := p1.Y()*CANVASYSCALE + float64(offsetRow)
-		WideLineProjection(canvas, x0, x1, y0, y1, 1.5)
+		WideLineProjection(canvas, x0, x1, y0, y1, 0.8)
 	}
 }
 

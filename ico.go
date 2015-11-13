@@ -12,7 +12,7 @@ import "math"
 var POINT rune = '░'
 var EDGE rune = '⣿'
 var BLANK rune = ' '
-var CANVASXSCALE float64 = 2.2
+var CANVASXSCALE float64 = 2.4
 var CANVASYSCALE float64 = 1.0
 
 type Ico struct {
@@ -120,9 +120,10 @@ func fillPoints(x0, yStart, inc int, x1, y1, x2, y2, deltaX, deltaY, adj, length
 	x := float64(x0)
 	for yi := yStart; yi >= 0 && yi <= maxY; yi += inc {
 		y := float64(yi)
+		//y := float64(yStart) + float64(yi - yStart) * 2.2
 		//lineDist := pointLineDist(float64(x0), float64(yi), deltaX, deltaY, adj, length)
-		pointDist1 := pointDist(float64(x0), float64(yi), x1, y1)
-		pointDist2 := pointDist(float64(x0), float64(yi), x2, y2)
+		pointDist1 := pointDist(x, float64(yi), x1, y1)
+		pointDist2 := pointDist(x, float64(yi), x2, y2)
 
 		filledPoint := canvas.Get(yi, x0)
 		runePoint := 0
@@ -185,7 +186,7 @@ func WideLineProjection(canvas *Canvas, x2, x1, y2, y1, width float64) {
 		}
 
 		fillPoints(x0, round(y0), 1, x1, y1, x2, y2, deltaX, deltaY, adj, length, canvas, maxY, width)
-		fillPoints(x0, round(y0) - 1, -1, x1, y1, x2, y2, deltaX, deltaY, adj, length, canvas, maxY, width)
+		fillPoints(x0, round(y0), -1, x1, y1, x2, y2, deltaX, deltaY, adj, length, canvas, maxY, width)
 	}
 }
 
@@ -203,7 +204,7 @@ func ProjectEdgesOntoCanvas(edges []*Edge, canvas *Canvas, offsetRow, offsetColu
 		x1 := p1.X()*CANVASXSCALE + float64(offsetColumn)
 		y0 := p0.Y()*CANVASYSCALE + float64(offsetRow)
 		y1 := p1.Y()*CANVASYSCALE + float64(offsetRow)
-		WideLineProjection(canvas, x0, x1, y0, y1, 0.8)
+		WideLineProjection(canvas, x0, x1, y0, y1, 0.5)
 	}
 }
 

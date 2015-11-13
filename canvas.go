@@ -37,6 +37,9 @@ func (this *Canvas) Print() {
 }
 
 func (this *Canvas) Get(y, x int) rune {
+	if x < 0 || x >= int(this.Width()) || y < 0 || y >= int(this.Height()) {
+		return rune(0)
+	}
 	return (*this)[uint(y)][uint(x)]
 }
 

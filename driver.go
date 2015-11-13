@@ -63,9 +63,9 @@ loop:
 			ico.Model.RotateAroundXAxis(0.02)
 			//model.RotateAroundYAxis(0.08)
 
-			points, edges := ico.Model.CollectPointsAndEdges(true)
+			_, edges := ico.Model.CollectPointsAndEdges(true)
 			ProjectEdgesOntoCanvas(edges, ico.Canvas, ico.YOffset, ico.XOffset, nil)
-			ProjectPointsOntoCanvas(points, ico.Canvas, ico.YOffset, ico.XOffset, nil)
+			//ProjectPointsOntoCanvas(points, ico.Canvas, ico.YOffset, ico.XOffset, nil)
 			printCanvasToTermbox(ico.Canvas)
 			ico.Canvas.Clear()
 			time.Sleep(50 * time.Millisecond)

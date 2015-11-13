@@ -3,13 +3,14 @@
 // http://members.chello.at/~easyfilter/bresenham.html
 // http://inside.mines.edu/fs_home/gmurray/ArbitraryAxisRotation/
 // http://blog.andreaskahler.com/2009/06/creating-icosphere-mesh-in-code.html
+// http://www.utf8-chartable.de/unicode-utf8-table.pl?start=9472
 
 package main
 
 import "math"
 
-var POINT rune = '•'
-var EDGE rune = '·'
+var POINT rune = '░'
+var EDGE rune = '⣿'
 var BLANK rune = ' '
 var CANVASXSCALE float64 = 2.2
 var CANVASYSCALE float64 = 1.0
@@ -92,30 +93,57 @@ func ProjectPointsOntoCanvas(points []*D3Point, canvas *Canvas, offsetRow, offse
 }
 
 var FILLS map[int]rune = map[int]rune{
-	0:	 '|',
-	45:	 '/',
-	90:  '-',
-	135: '\\',
+	0:	 '⣿',
+	45:	 '⣼',
+	90:  '⠶',
+	135: '⠦',
 }
 
 func pointLineDist(x0, y0, deltaX, deltaY, adj, length float64) float64 {
 	return math.Abs(deltaY * x0 - deltaX * y0 + adj) / length
 }
 
+func pointLineDistWithin(x0, y0, deltaX, deltaY, adj, length, dist float64) int {
+	if pointLineDist(x0, y0, deltaX, deltaY, adj, length) < dist {
+		return 1
+	}
+	return 0
+}
+
 func pointDist(x0, y0, x1, y1 float64) float64 {
 	return math.Sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0))
 }
 
-func fillPoints(x0, yStart, inc int, x1, y1, x2, y2, deltaX, deltaY, adj, length float64, canvas *Canvas, maxY int, width float64, edge rune) {
+var BRAILLE rune = '⠀'
+
+func fillPoints(x0, yStart, inc int, x1, y1, x2, y2, deltaX, deltaY, adj, length float64, canvas *Canvas, maxY int, width float64) {
+	x := float64(x0)
 	for yi := yStart; yi >= 0 && yi <= maxY; yi += inc {
-		lineDist := pointLineDist(float64(x0), float64(yi), deltaX, deltaY, adj, length)
+		y := float64(yi)
+		//lineDist := pointLineDist(float64(x0), float64(yi), deltaX, deltaY, adj, length)
 		pointDist1 := pointDist(float64(x0), float64(yi), x1, y1)
 		pointDist2 := pointDist(float64(x0), float64(yi), x2, y2)
 
-		if lineDist > width || pointDist1 + pointDist2 > length + 2 {
+		filledPoint := canvas.Get(yi, x0)
+		runePoint := 0
+		if int(filledPoint) > int(BRAILLE) && int(filledPoint) <= int('⣿') {
+			logger.Printf("::: %d\n", filledPoint)
+			runePoint = int(filledPoint) - int(BRAILLE)
+		}
+		runePoint |= (pointLineDistWithin(x - 0.1, y - 0.2, deltaX, deltaY, adj, length, width) << 0)
+		runePoint |= (pointLineDistWithin(x - 0.1, y - 0.1, deltaX, deltaY, adj, length, width) << 1)
+		runePoint |= (pointLineDistWithin(x - 0.1, y + 0.1, deltaX, deltaY, adj, length, width) << 2)
+		runePoint |= (pointLineDistWithin(x + 0.1, y - 0.2, deltaX, deltaY, adj, length, width) << 3)
+		runePoint |= (pointLineDistWithin(x + 0.1, y - 0.1, deltaX, deltaY, adj, length, width) << 4)
+		runePoint |= (pointLineDistWithin(x + 0.1, y + 0.1, deltaX, deltaY, adj, length, width) << 5)
+		runePoint |= (pointLineDistWithin(x - 0.1, y + 0.2, deltaX, deltaY, adj, length, width) << 6)
+		runePoint |= (pointLineDistWithin(x + 0.1, y + 0.2, deltaX, deltaY, adj, length, width) << 7)
+
+		if runePoint == 0 || pointDist1 + pointDist2 > length + 2 {
 			return
 		}
 
+		edge := rune(int(BRAILLE) + runePoint)
 		canvas.Set(yi, x0, edge)
 	}
 }
@@ -146,12 +174,6 @@ func WideLineProjection(canvas *Canvas, x2, x1, y2, y1, width float64) {
 	adj := x2 * y1 - y2 * x1
 	length := math.Sqrt((y2 - y1) * (y2 - y1) + (x2 - x1) * (x2 - x1))
 
-	// get edge rune
-	angle := math.Atan(deltaY / deltaX) * 180 / math.Pi + 90
-	key := (round(angle / 45.0) * 45) % 180
-	logger.Printf("(%f,%f) (%f,%f) : %f  %d   %f, %d\n", x1, y1, x2, y2, angle / 8.0, round(angle/8.0), angle, key)
-	edge := FILLS[key]
-
 	var y0 float64
 
 	for x0 := round(x1 - width - 1); x0 <= round(x2 + width + 1) && x0 <= maxX; x0++ {
@@ -162,8 +184,8 @@ func WideLineProjection(canvas *Canvas, x2, x1, y2, y1, width float64) {
 			y0 = y1
 		}
 
-		fillPoints(x0, round(y0), 1, x1, y1, x2, y2, deltaX, deltaY, adj, length, canvas, maxY, width, edge)
-		fillPoints(x0, round(y0) - 1, -1, x1, y1, x2, y2, deltaX, deltaY, adj, length, canvas, maxY, width, edge)
+		fillPoints(x0, round(y0), 1, x1, y1, x2, y2, deltaX, deltaY, adj, length, canvas, maxY, width)
+		fillPoints(x0, round(y0) - 1, -1, x1, y1, x2, y2, deltaX, deltaY, adj, length, canvas, maxY, width)
 	}
 }
 

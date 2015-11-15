@@ -3,3 +3,5 @@ ico
 src
 pkg
 *.log
+*.js
+*.js.map

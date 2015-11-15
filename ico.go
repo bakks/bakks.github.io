@@ -128,7 +128,7 @@ func fillPoints(x0, yStart, inc int, x1, y1, x2, y2, deltaX, deltaY, adj, length
 		filledPoint := canvas.Get(yi, x0)
 		runePoint := 0
 		if int(filledPoint) > int(BRAILLE) && int(filledPoint) <= int('⣿') {
-			logger.Printf("::: %d\n", filledPoint)
+			//logger.Printf("::: %d\n", filledPoint)
 			runePoint = int(filledPoint) - int(BRAILLE)
 		}
 		runePoint |= (pointLineDistWithin(x - 0.1, y - 0.2, deltaX, deltaY, adj, length, width) << 0)

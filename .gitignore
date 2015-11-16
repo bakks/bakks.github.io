@@ -3,6 +3,7 @@ ico
 icosahedron
 src
 pkg
+closure
 *.log
 *.js
 *.js.map

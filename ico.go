@@ -12,7 +12,7 @@ import "math"
 var POINT rune = '░'
 var EDGE rune = '⣿'
 var BLANK rune = '⠀'
-var CANVASXSCALE float64 = 2.2
+var CANVASXSCALE float64 = 2.0
 var CANVASYSCALE float64 = 1.0
 
 type Ico struct {
@@ -96,7 +96,15 @@ func pointLineDist(x0, y0, deltaX, deltaY, adj, length float64) float64 {
 	return math.Abs(deltaY * x0 - deltaX * y0 + adj) / length
 }
 
-func pointLineDistWithin(x0, y0, deltaX, deltaY, adj, length, dist float64) int {
+func pointLineDistWithin(x0, y0, deltaX, deltaY, adj, length, dist, x1, y1, x2, y2 float64) int {
+	// check if test point is outside bounding box of 2 given points
+	if x0 < x1 - dist && x0 < x2 - dist ||
+		x0 > x1 + dist && x0 > x2 + dist ||
+		y0 < y1 - dist && y0 < y2 - dist ||
+		y0 > y1 + dist && y0 > y2 + dist {
+		return 0
+	}
+	// check if test point is within dist of the given line
 	if pointLineDist(x0, y0, deltaX, deltaY, adj, length) < dist {
 		return 1
 	}
@@ -124,14 +132,14 @@ func fillPoints(x0, yStart, inc int, x1, y1, x2, y2, deltaX, deltaY, adj, length
 			//logger.Printf("::: %d\n", filledPoint)
 			runePoint = int(filledPoint) - int(BRAILLE)
 		}
-		runePoint |= (pointLineDistWithin(x - 0.1, y - 0.2, deltaX, deltaY, adj, length, width) << 0)
-		runePoint |= (pointLineDistWithin(x - 0.1, y - 0.1, deltaX, deltaY, adj, length, width) << 1)
-		runePoint |= (pointLineDistWithin(x - 0.1, y + 0.1, deltaX, deltaY, adj, length, width) << 2)
-		runePoint |= (pointLineDistWithin(x + 0.1, y - 0.2, deltaX, deltaY, adj, length, width) << 3)
-		runePoint |= (pointLineDistWithin(x + 0.1, y - 0.1, deltaX, deltaY, adj, length, width) << 4)
-		runePoint |= (pointLineDistWithin(x + 0.1, y + 0.1, deltaX, deltaY, adj, length, width) << 5)
-		runePoint |= (pointLineDistWithin(x - 0.1, y + 0.2, deltaX, deltaY, adj, length, width) << 6)
-		runePoint |= (pointLineDistWithin(x + 0.1, y + 0.2, deltaX, deltaY, adj, length, width) << 7)
+		runePoint |= (pointLineDistWithin(x - 0.25, y - 0.2, deltaX, deltaY, adj, length, width, x1, y1, x2, y2) << 0)
+		runePoint |= (pointLineDistWithin(x - 0.25, y - 0.1, deltaX, deltaY, adj, length, width, x1, y1, x2, y2) << 1)
+		runePoint |= (pointLineDistWithin(x - 0.25, y + 0.1, deltaX, deltaY, adj, length, width, x1, y1, x2, y2) << 2)
+		runePoint |= (pointLineDistWithin(x + 0.25, y - 0.2, deltaX, deltaY, adj, length, width, x1, y1, x2, y2) << 3)
+		runePoint |= (pointLineDistWithin(x + 0.25, y - 0.1, deltaX, deltaY, adj, length, width, x1, y1, x2, y2) << 4)
+		runePoint |= (pointLineDistWithin(x + 0.25, y + 0.1, deltaX, deltaY, adj, length, width, x1, y1, x2, y2) << 5)
+		runePoint |= (pointLineDistWithin(x - 0.25, y + 0.2, deltaX, deltaY, adj, length, width, x1, y1, x2, y2) << 6)
+		runePoint |= (pointLineDistWithin(x + 0.25, y + 0.2, deltaX, deltaY, adj, length, width, x1, y1, x2, y2) << 7)
 
 		if runePoint == 0 || pointDist1 + pointDist2 > length + 2 {
 			return
@@ -174,11 +182,14 @@ func WideLineProjection(canvas *Canvas, x2, x1, y2, y1, width float64) {
 		//logger.Printf("(%f,%f) (%f,%f) : %d, %f\n", x1, y1, x2, y2, x0, y0)
 		if !math.IsNaN(m) {
 			y0 = m * float64(x0) + b
+			if y0 < y1 && y0 < y2 || y0 > y1 && y0 > y2 {
+				y0 = y1
+			}
 		} else {
 			y0 = y1
 		}
 
-		fillPoints(x0, round(y0), 1, x1, y1, x2, y2, deltaX, deltaY, adj, length, canvas, maxY, width)
+		fillPoints(x0, round(y0),  1, x1, y1, x2, y2, deltaX, deltaY, adj, length, canvas, maxY, width)
 		fillPoints(x0, round(y0), -1, x1, y1, x2, y2, deltaX, deltaY, adj, length, canvas, maxY, width)
 	}
 }

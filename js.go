@@ -36,7 +36,7 @@ func (this *Ico) RotateY(f float64) {
 
 func (this *Ico) Render() string {
 	_, edges := this.Model.CollectPointsAndEdges(true)
-	ProjectEdgesOntoCanvas(edges, this.Canvas, this.YOffset, this.XOffset, nil)
+	ProjectEdgesOntoCanvas(edges, this.Canvas, this.YOffset, this.XOffset, nil, 0.4)
 
 	str := this.Canvas.ToString()
 	this.Canvas.Clear()

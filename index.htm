@@ -37,18 +37,46 @@
       }
     ]
 
+    var gradientStart = '0F75FF';
+    var gradientEnd = '0AFF6F';
+
+    var parseHex = function(x) {
+      return [
+        parseInt(x.substring(0,2), 16),
+        parseInt(x.substring(2,4), 16),
+        parseInt(x.substring(4,6), 16),
+      ]
+    }
+
+    Number.prototype.pad = function(size) {
+      var s = this.toString(16);
+      while (s.length < (size || 2)) {s = "0" + s;}
+      return s;
+    }
+
+    var hexGradient = function(start, end, position) {
+      var startRGB = parseHex(start);
+      var endRGB = parseHex(end);
+      var result = [];
+      for (var i = 0; i < 3; i++) {
+        result[i] = Math.round(startRGB[i] + (endRGB[i] - startRGB[i]) * position);
+      }
+      return result[0].pad() + result[1].pad() + result[2].pad();
+    }
+
     var insertLinks = function(str) {
       var x = [];
       var prev = 0;
+      var rowAdjust = 39;
 
       for (var i in links) {
         var text = links[i]['text'];
         var url = links[i]['url'];
 
         if (x.length == 0) {
-          var start = (canvasWidth + 4) * (canvasHeight / 2 - 10) + 15;
+          var start = (canvasWidth + rowAdjust) * (canvasHeight / 2 - 10) + 15;
         } else {
-          start += (canvasWidth + 4) * 2;
+          start += (canvasWidth + rowAdjust) * 2;
         }
 
         x.push(str.substring(prev, start));
@@ -59,9 +87,25 @@
       return x.join('');
     }
 
+    var colorRows = function(str) {
+       var x = [];
+       var prev = 0;
+
+       for (var i = 0; i < canvasHeight; i++) {
+         var color = hexGradient(gradientStart, gradientEnd, i / canvasHeight);
+         console.log(color)
+         x.push('<span style="color:#' + color + '">')
+         x.push(str.substring(prev, prev + canvasWidth))
+         x.push('</span><br>')
+         prev += canvasWidth + 4;
+       }
+       return x.join('');
+    }
+
     var render = function() {
       var str = activeIco.Render()
       str = str.replace(/(?:\r\n|\r|\n)/g, '<br>');
+      str = colorRows(str);
       str = insertLinks(str);
       document.body.innerHTML = str;
     }
@@ -75,8 +119,8 @@
 
         var posX = mouseEvent.clientX;
         var posY = mouseEvent.clientY;
-        var xChange = (posX - 400) / 10000;
-        var yChange = (posY - 350) / 10000 * -1;
+        var xChange = (posX) / 30000;
+        var yChange = (posY) / 30000 * -1;
 
         xChange *= -1;
         yChange *= -1;
@@ -122,6 +166,10 @@
       text-decoration: none;
       font-size:0.9em;
       letter-spacing: 0.16em;
+    }
+    * {
+      margin: 0px;
+      padding: 0px;
     }
   </style>
 </head>

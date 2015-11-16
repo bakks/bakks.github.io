@@ -14,11 +14,11 @@ func New(width, height int) *js.Object {
 		Height: uint(height),
 		Canvas: NewCanvas(uint(height), uint(width)),
 		Model: MakeIcosahedron(1),
-		XOffset: width / 2,
-		YOffset: int(float64(height) / 1.5),
+		XOffset: width / 8,
+		YOffset: int(float64(height) / 3),
 	}
 
-	ico.Model.Scale(15)
+	ico.Model.Scale(30)
 
 	return js.MakeWrapper(&ico)
 }
@@ -33,7 +33,7 @@ func (this *Ico) RotateY(f float64) {
 
 func (this *Ico) Render() string {
 	_, edges := this.Model.CollectPointsAndEdges(true)
-	ProjectEdgesOntoCanvas(edges, this.Canvas, this.YOffset, this.XOffset, nil, 0.4)
+	ProjectEdgesOntoCanvas(edges, this.Canvas, this.YOffset, this.XOffset, nil, 0.6)
 
 	str := this.Canvas.ToString()
 	this.Canvas.Clear()

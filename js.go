@@ -8,16 +8,13 @@ func main() {
 	})
 }
 
-func New() *js.Object {
-	width := uint(80)
-	height := uint(40)
-
+func New(width, height int) *js.Object {
 	ico := Ico{
-		Width: width,
-		Height: height,
-		Canvas: NewCanvas(height, width),
+		Width: uint(width),
+		Height: uint(height),
+		Canvas: NewCanvas(uint(height), uint(width)),
 		Model: MakeIcosahedron(1),
-		XOffset: int(width) / 2,
+		XOffset: width / 2,
 		YOffset: int(float64(height) / 1.5),
 	}
 

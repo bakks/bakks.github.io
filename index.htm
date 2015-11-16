@@ -6,25 +6,101 @@
   <script type="text/javascript">
     var activeIco;
     var mouseEvent;
+    var canvasWidth = 70;
+    var canvasHeight = 35;
+    var mousedOver = false;
+
+    var links = [
+      {
+        text: 'resume',
+        url: 'https://www.dropbox.com/s/925fscysji67aun/resume.pdf?dl=1'
+      },
+      {
+        text: 'linkedin',
+        url: 'https://linkedin.com/in/pbbakkum'
+      },
+      {
+        text: 'github',
+        url: 'https://github.com/bakks',
+      },
+      {
+        text: '@pbbakkum',
+        url: 'https://twitter.com/pbbakkum'
+      },
+      {
+        text: '+1 757 812 2365',
+        url: 'tel:1-757-812-2365'
+      },
+      {
+        text: 'pbb7c@virginia.edu',
+        url: 'mailto:pbb7c@virginia.edu'
+      }
+    ]
+
+    var insertLinks = function(str) {
+      var x = [];
+      var prev = 0;
+
+      for (var i in links) {
+        var text = links[i]['text'];
+        var url = links[i]['url'];
+
+        if (x.length == 0) {
+          var start = (canvasWidth + 4) * (canvasHeight / 2 - 10) - 25;
+        } else {
+          start += (canvasWidth + 4) * 2;
+        }
+
+        x.push(str.substring(prev, start));
+        x.push('<a href="' + url + '" onmousedown="mouseDown()" onmouseover="mouseOver()" onmouseout="mouseOut()">' + text + '</a>');
+        prev = start + text.length;
+      }
+      x.push(str.substring(prev, str.length));
+      return x.join('');
+    }
+
+    var render = function() {
+      var str = activeIco.Render()
+      str = str.replace(/(?:\r\n|\r|\n)/g, '<br>');
+      str = insertLinks(str);
+      document.body.innerHTML = str;
+    }
 
     window.onload = function() {
-      activeIco = ico.New();
+      activeIco = ico.New(70, 40);
+      render()
 
       window.setInterval(function() {
         if (!mouseEvent) return;
 
         var posX = mouseEvent.clientX;
         var posY = mouseEvent.clientY;
-        var xChange = (posX - window.innerWidth / 2) / 10000;
-        var yChange = (posY - window.innerHeight / 2) / 10000 * -1;
+        var xChange = (posX - 400) / 10000;
+        var yChange = (posY - 350) / 10000 * -1;
+
+        xChange *= -1;
+        yChange *= -1;
+
+        if (mousedOver) {
+          xChange *= -1 * 5;
+          yChange *= -1 * 5;
+        }
 
         activeIco.RotateX(xChange);
         activeIco.RotateY(yChange);
-        var str = activeIco.Render()
-        str = str.replace(/(?:\r\n|\r|\n)/g, '<br>');
-        //str = str.replace(/ /g, '⠀');
-        document.body.innerHTML = str;
+        render();
       }, 75)
+    }
+
+    var mouseOver = function() {
+      mousedOver = true;
+    }
+
+    var mouseOut = function() {
+      mousedOver = false;
+    }
+
+    var mouseDown = function() {
     }
 
     var mousePosition = function(e) {
@@ -35,11 +111,17 @@
 
   <style type="text/css">
     body {
-      color: #ffffff;
-      font-family: Lucida, monospace;
-      background-color: #333;
+      color: #999;
+      font-family: Courier;
+      background-color: #222;
       width: 100%;
       height: 100%;
+    }
+    a {
+      color: white;
+      text-decoration: none;
+      font-size:0.9em;
+      letter-spacing: 0.16em;
     }
   </style>
 </head>

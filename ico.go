@@ -132,14 +132,14 @@ func fillPoints(x0, yStart, inc int, x1, y1, x2, y2, deltaX, deltaY, adj, length
 			//logger.Printf("::: %d\n", filledPoint)
 			runePoint = int(filledPoint) - int(BRAILLE)
 		}
-		runePoint |= (pointLineDistWithin(x - 0.25, y - 0.2, deltaX, deltaY, adj, length, width, x1, y1, x2, y2) << 0)
-		runePoint |= (pointLineDistWithin(x - 0.25, y - 0.1, deltaX, deltaY, adj, length, width, x1, y1, x2, y2) << 1)
-		runePoint |= (pointLineDistWithin(x - 0.25, y + 0.1, deltaX, deltaY, adj, length, width, x1, y1, x2, y2) << 2)
-		runePoint |= (pointLineDistWithin(x + 0.25, y - 0.2, deltaX, deltaY, adj, length, width, x1, y1, x2, y2) << 3)
-		runePoint |= (pointLineDistWithin(x + 0.25, y - 0.1, deltaX, deltaY, adj, length, width, x1, y1, x2, y2) << 4)
-		runePoint |= (pointLineDistWithin(x + 0.25, y + 0.1, deltaX, deltaY, adj, length, width, x1, y1, x2, y2) << 5)
-		runePoint |= (pointLineDistWithin(x - 0.25, y + 0.2, deltaX, deltaY, adj, length, width, x1, y1, x2, y2) << 6)
-		runePoint |= (pointLineDistWithin(x + 0.25, y + 0.2, deltaX, deltaY, adj, length, width, x1, y1, x2, y2) << 7)
+		runePoint |= (pointLineDistWithin(x - 0.25, y - 0.4, deltaX, deltaY, adj, length, width, x1, y1, x2, y2) << 0)
+		runePoint |= (pointLineDistWithin(x - 0.25, y - 0.2, deltaX, deltaY, adj, length, width, x1, y1, x2, y2) << 1)
+		runePoint |= (pointLineDistWithin(x - 0.25, y + 0.2, deltaX, deltaY, adj, length, width, x1, y1, x2, y2) << 2)
+		runePoint |= (pointLineDistWithin(x + 0.25, y - 0.4, deltaX, deltaY, adj, length, width, x1, y1, x2, y2) << 3)
+		runePoint |= (pointLineDistWithin(x + 0.25, y - 0.2, deltaX, deltaY, adj, length, width, x1, y1, x2, y2) << 4)
+		runePoint |= (pointLineDistWithin(x + 0.25, y + 0.2, deltaX, deltaY, adj, length, width, x1, y1, x2, y2) << 5)
+		runePoint |= (pointLineDistWithin(x - 0.25, y + 0.4, deltaX, deltaY, adj, length, width, x1, y1, x2, y2) << 6)
+		runePoint |= (pointLineDistWithin(x + 0.25, y + 0.4, deltaX, deltaY, adj, length, width, x1, y1, x2, y2) << 7)
 
 		if runePoint == 0 || pointDist1 + pointDist2 > length + 2 {
 			return

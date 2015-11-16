@@ -11,8 +11,8 @@ import "math"
 
 var POINT rune = '░'
 var EDGE rune = '⣿'
-var BLANK rune = ' '
-var CANVASXSCALE float64 = 2.4
+var BLANK rune = '⠀'
+var CANVASXSCALE float64 = 2.2
 var CANVASYSCALE float64 = 1.0
 
 type Ico struct {
@@ -90,13 +90,6 @@ func ProjectPointsOntoCanvas(points []*D3Point, canvas *Canvas, offsetRow, offse
 		x := round(projection.X()*CANVASXSCALE) + offsetColumn
 		canvas.Set(y, x, POINT)
 	}
-}
-
-var FILLS map[int]rune = map[int]rune{
-	0:	 '⣿',
-	45:	 '⣼',
-	90:  '⠶',
-	135: '⠦',
 }
 
 func pointLineDist(x0, y0, deltaX, deltaY, adj, length float64) float64 {
@@ -190,7 +183,7 @@ func WideLineProjection(canvas *Canvas, x2, x1, y2, y1, width float64) {
 	}
 }
 
-func ProjectEdgesOntoCanvas(edges []*Edge, canvas *Canvas, offsetRow, offsetColumn int, occludedPoints []*D3Point) {
+func ProjectEdgesOntoCanvas(edges []*Edge, canvas *Canvas, offsetRow, offsetColumn int, occludedPoints []*D3Point, width float64) {
 	offsetX := float64(0)
 	offsetZ := float64(-10)
 
@@ -204,7 +197,7 @@ func ProjectEdgesOntoCanvas(edges []*Edge, canvas *Canvas, offsetRow, offsetColu
 		x1 := p1.X()*CANVASXSCALE + float64(offsetColumn)
 		y0 := p0.Y()*CANVASYSCALE + float64(offsetRow)
 		y1 := p1.Y()*CANVASYSCALE + float64(offsetRow)
-		WideLineProjection(canvas, x0, x1, y0, y1, 0.5)
+		WideLineProjection(canvas, x0, x1, y0, y1, width)
 	}
 }
 

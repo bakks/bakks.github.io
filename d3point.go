@@ -71,6 +71,14 @@ func (this *D3Point) RotateAroundYAxis(angle float64) {
 	this.SetZ(z)
 }
 
+func (this *D3Point) RotateAroundZAxis(angle float64) {
+	x := this.X()*math.Cos(angle) - this.Y()*math.Sin(angle)
+	y := this.X()*math.Sin(angle) + this.Y()*math.Cos(angle)
+
+	this.SetX(x)
+	this.SetY(y)
+}
+
 func (this *D3Point) GetMiddlePoint(that *D3Point) *D3Point {
 	return &D3Point{
 		0.5 * (that.x + this.x),

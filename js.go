@@ -3,25 +3,43 @@ package main
 import "github.com/gopherjs/gopherjs/js"
 
 func main() {
-	js.Global.Set("ico", render)
+	js.Global.Set("ico", map[string]interface{}{
+		"New": New,
+	})
 }
 
-func render() string {
-	width := uint(120)
-	height := uint(60)
-	canvas := NewCanvas(height, width)
-	model := MakeIcosahedron(1)
-	model.Scale(30)
-	xOffset := int(width) / 2
-	yOffset := int(float64(height) / 1.5)
+func New() *js.Object {
+	width := uint(80)
+	height := uint(40)
 
-	model.RotateAroundXAxis(0.02)
-	//model.RotateAroundYAxis(0.08)
+	ico := Ico{
+		Width: width,
+		Height: height,
+		Canvas: NewCanvas(height, width),
+		Model: MakeIcosahedron(1),
+		XOffset: int(width) / 2,
+		YOffset: int(float64(height) / 1.5),
+	}
 
-	_, edges := model.CollectPointsAndEdges(true)
-	ProjectEdgesOntoCanvas(edges, canvas, yOffset, xOffset, nil)
+	ico.Model.Scale(15)
 
-	str := canvas.ToString()
-	canvas.Clear()
+	return js.MakeWrapper(&ico)
+}
+
+func (this *Ico) RotateX(f float64) {
+	this.Model.RotateAroundZAxis(f)
+}
+
+func (this *Ico) RotateY(f float64) {
+	this.Model.RotateAroundXAxis(f)
+}
+
+func (this *Ico) Render() string {
+	_, edges := this.Model.CollectPointsAndEdges(true)
+	ProjectEdgesOntoCanvas(edges, this.Canvas, this.YOffset, this.XOffset, nil)
+
+	str := this.Canvas.ToString()
+	this.Canvas.Clear()
 	return str
 }
+

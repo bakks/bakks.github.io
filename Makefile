@@ -9,7 +9,7 @@ clean:
 	rm -rf ico
 
 js: $(files)
-	./pkg/darwin_amd64/github.com/gopherjs/bin/gopherjs build
+	gopherjs build
 
 .PHONY: all clean
 

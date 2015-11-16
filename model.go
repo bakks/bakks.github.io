@@ -143,3 +143,10 @@ func (this *Model) RotateAroundYAxis(angle float64) {
 		this.points[i].RotateAroundYAxis(angle)
 	}
 }
+
+func (this *Model) RotateAroundZAxis(angle float64) {
+	this.collectModelPointsAndEdges()
+	for i := 0; i < len(this.points) && this.points[i] != nil; i++ {
+		this.points[i].RotateAroundZAxis(angle)
+	}
+}

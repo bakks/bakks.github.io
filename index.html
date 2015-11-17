@@ -93,7 +93,6 @@
 
        for (var i = 0; i < canvasHeight; i++) {
          var color = hexGradient(gradientStart, gradientEnd, i / canvasHeight);
-         console.log(color)
          x.push('<span style="color:#' + color + '">')
          x.push(str.substring(prev, prev + canvasWidth))
          x.push('</span><br>')
@@ -119,6 +118,11 @@
 
         var posX = mouseEvent.clientX;
         var posY = mouseEvent.clientY;
+
+        if (document.elementFromPoint(posX, posY).tagName != 'A') {
+          mousedOver = false;
+        }
+
         var xChange = (posX) / 30000;
         var yChange = (posY) / 30000 * -1;
 

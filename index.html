@@ -106,6 +106,9 @@
       str = str.replace(/(?:\r\n|\r|\n)/g, '<br>');
       str = colorRows(str);
       str = insertLinks(str);
+      if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
+        str = str.replace(/[⠀]/g, '<span style="font-size:0.9em;letter-spacing:0.16em">&nbsp;</span>');
+      }
       document.body.innerHTML = str;
     }
 

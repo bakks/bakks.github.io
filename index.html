@@ -2,12 +2,19 @@
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <script src="./ico-min.js" type="text/javascript"></script>
+  <script src="./target/ico-min.js" type="text/javascript"></script>
   <script type="text/javascript">
+    var canvasWidth = 70;
+    var canvasHeight = 40;
+    var xOffset = canvasWidth / 2;
+    var yOffset = canvasHeight / 2;
+    var joints = 1;
+    var scale = 15;
+    var linksStartRow = 10;
+    var linksCharOffset = 40;
+
     var activeIco;
     var mouseEvent;
-    var canvasWidth = 70;
-    var canvasHeight = 35;
     var mousedOver = false;
 
     var links = [
@@ -67,21 +74,18 @@
     var insertLinks = function(str) {
       var x = [];
       var prev = 0;
-      var rowAdjust = 39;
+      var rowCharWidth = str.search('<br>') + 4;
+      var start = rowCharWidth * linksStartRow + linksCharOffset;
 
       for (var i in links) {
         var text = links[i]['text'];
         var url = links[i]['url'];
 
-        if (x.length == 0) {
-          var start = (canvasWidth + rowAdjust) * (canvasHeight / 2 - 10) + 15;
-        } else {
-          start += (canvasWidth + rowAdjust) * 2;
-        }
-
         x.push(str.substring(prev, start));
         x.push('<a href="' + url + '" onmousedown="mouseDown()" onmouseover="mouseOver()" onmouseout="mouseOut()">' + text + '</a>');
         prev = start + text.length;
+
+        start += rowCharWidth * 2;
       }
       x.push(str.substring(prev, str.length));
       return x.join('');
@@ -113,7 +117,7 @@
     }
 
     window.onload = function() {
-      activeIco = ico.New(70, 40);
+      activeIco = ico.New(canvasWidth, canvasHeight, xOffset, yOffset, joints, scale);
       render()
 
       window.setInterval(function() {

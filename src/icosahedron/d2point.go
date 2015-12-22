@@ -1,4 +1,4 @@
-package main
+package icosahedron
 
 type D2Point struct {
 	x, y float64

@@ -1,0 +1,6 @@
+package: .
+import:
+- package: github.com/gopherjs/gopherjs
+  subpackages:
+  - /js
+- package: gopherjs

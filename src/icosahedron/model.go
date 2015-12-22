@@ -1,4 +1,4 @@
-package main
+package icosahedron
 
 type Edge struct {
 	P0 *D3Point

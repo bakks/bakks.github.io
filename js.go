@@ -1,5 +1,6 @@
-package main 
+package main
 
+import "icosahedron"
 import "github.com/gopherjs/gopherjs/js"
 
 func main() {
@@ -8,35 +9,18 @@ func main() {
 	})
 }
 
-func New(width, height int) *js.Object {
-	ico := Ico{
+func New(width, height, xOffset, yOffset, joints int, scale float64) *js.Object {
+	ico := icosahedron.Ico{
 		Width: uint(width),
 		Height: uint(height),
-		Canvas: NewCanvas(uint(height), uint(width)),
-		Model: MakeIcosahedron(1),
-		XOffset: width / 8,
-		YOffset: int(float64(height) / 3),
+		Canvas: icosahedron.NewCanvas(uint(height), uint(width)),
+		Model: icosahedron.MakeIcosahedron(1),
+		XOffset: xOffset,
+		YOffset: yOffset,
 	}
 
-	ico.Model.Scale(30)
+	ico.Model.Scale(scale)
 
 	return js.MakeWrapper(&ico)
-}
-
-func (this *Ico) RotateX(f float64) {
-	this.Model.RotateAroundZAxis(f)
-}
-
-func (this *Ico) RotateY(f float64) {
-	this.Model.RotateAroundXAxis(f)
-}
-
-func (this *Ico) Render() string {
-	_, edges := this.Model.CollectPointsAndEdges(true)
-	ProjectEdgesOntoCanvas(edges, this.Canvas, this.YOffset, this.XOffset, nil, 0.6)
-
-	str := this.Canvas.ToString()
-	this.Canvas.Clear()
-	return str
 }
 

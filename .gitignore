@@ -1,9 +1,9 @@
 *.swp
-ico
-icosahedron
-src
 pkg
 closure
 *.log
 *.js
 *.js.map
+vendor
+src/github.com
+

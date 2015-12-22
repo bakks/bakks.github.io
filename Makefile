@@ -1,21 +1,24 @@
+BASE := $(shell pwd)
+export GOPATH=$(BASE)
+#export GOBIN=$(BASE)/bin
+export GO15VENDOREXPERIMENT=1
+
 files=$(wildcard *.go)
 
 all: js
 
-ico: $(files)
-	go build -o ico $(files)
-
 clean:
-	rm -rf ico icosahedron *.log *.js *.js.map
+	rm -rf target
 
-closure/compiler.jar:
-	mkdir -p closure
-	curl https://dl.google.com/closure-compiler/compiler-latest.zip > closure/closure.zip
-	cd closure && unzip closure.zip
+vendor/closure/compiler.jar:
+	mkdir -p vendor/closure
+	curl https://dl.google.com/closure-compiler/compiler-latest.zip > vendor/closure/closure.zip
+	cd vendor/closure && unzip closure.zip
 
-js: $(files) closure/compiler.jar
-	gopherjs build
-	java -jar closure/compiler.jar --js icosahedron.js --js_output_file ico-min.js
+js: vendor/closure/compiler.jar
+	mkdir -p target
+	gopherjs build -o target/icosahedron.js
+	java -jar vendor/closure/compiler.jar --js target/icosahedron.js --js_output_file target/ico-min.js
 
 .PHONY: all clean
 

@@ -5,7 +5,7 @@
 // http://blog.andreaskahler.com/2009/06/creating-icosphere-mesh-in-code.html
 // http://www.utf8-chartable.de/unicode-utf8-table.pl?start=9472
 
-package main
+package icosahedron
 
 import "math"
 
@@ -32,6 +32,23 @@ func NewIco(width, height uint, xOffset, yOffset int, scale float64) *Ico {
 	}
 	ico.Model.Scale(scale)
 	return ico
+}
+
+func (this *Ico) RotateX(f float64) {
+	this.Model.RotateAroundZAxis(f)
+}
+
+func (this *Ico) RotateY(f float64) {
+	this.Model.RotateAroundXAxis(f)
+}
+
+func (this *Ico) Render() string {
+	_, edges := this.Model.CollectPointsAndEdges(true)
+	ProjectEdgesOntoCanvas(edges, this.Canvas, this.YOffset, this.XOffset, nil, 0.6)
+
+	str := this.Canvas.ToString()
+	this.Canvas.Clear()
+	return str
 }
 
 func OrthographicProjection(point *D3Point, offsetX, offsetZ float64) *D2Point {

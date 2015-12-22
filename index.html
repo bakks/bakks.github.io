@@ -4,18 +4,19 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <script src="./target/ico-min.js" type="text/javascript"></script>
   <script type="text/javascript">
-    var canvasWidth = 70;
-    var canvasHeight = 40;
-    var xOffset = canvasWidth / 2;
-    var yOffset = canvasHeight / 2;
+    var canvasWidth = 94;
+    var canvasHeight = 60;
+    var xOffset = 50;
+    var yOffset = canvasHeight / 2 - 20;
     var joints = 1;
-    var scale = 15;
-    var linksStartRow = 10;
-    var linksCharOffset = 40;
+    var scale = 20;
+    var linksStartRow = 6;
+    var linksCharOffset = 32;
 
     var activeIco;
     var mouseEvent;
     var mousedOver = false;
+    var stopRotating = false;
 
     var links = [
       {
@@ -35,7 +36,7 @@
         url: 'https://twitter.com/pbbakkum'
       },
       {
-        text: '+1 757 812 2365',
+        text: '+1.757.812.2365',
         url: 'tel:1-757-812-2365'
       },
       {
@@ -82,7 +83,7 @@
         var url = links[i]['url'];
 
         x.push(str.substring(prev, start));
-        x.push('<a href="' + url + '" onmousedown="mouseDown()" onmouseover="mouseOver()" onmouseout="mouseOut()">' + text + '</a>');
+        x.push('<a href="' + url + '" onmousedown="mouseDown(event)" onmouseover="mouseOver()" onmouseout="mouseOut()">' + text + '</a>');
         prev = start + text.length;
 
         start += rowCharWidth * 2;
@@ -96,7 +97,7 @@
        var prev = 0;
 
        for (var i = 0; i < canvasHeight; i++) {
-         var color = hexGradient(gradientStart, gradientEnd, i / canvasHeight);
+         var color = hexGradient(gradientStart, gradientEnd, i / canvasHeight * 1.4);
          x.push('<span style="color:#' + color + '">')
          x.push(str.substring(prev, prev + canvasWidth))
          x.push('</span><br>')
@@ -130,7 +131,7 @@
           mousedOver = false;
         }
 
-        var xChange = (posX) / 30000;
+        var xChange = (posX - 400) / 30000;
         var yChange = (posY) / 30000 * -1;
 
         xChange *= -1;
@@ -141,8 +142,10 @@
           yChange *= -1 * 5;
         }
 
-        activeIco.RotateX(xChange);
-        activeIco.RotateY(yChange);
+        if (!stopRotating) {
+          activeIco.RotateX(xChange);
+          activeIco.RotateY(yChange);
+        }
         render();
       }, 75)
     }
@@ -155,11 +158,31 @@
       mousedOver = false;
     }
 
-    var mouseDown = function() {
+    var mouseDown = function(e) {
+      url = e.target.getAttribute('href');
+      if (e.ctrlKey ||
+        e.shiftKey ||
+        e.metaKey || // apple
+        (e.button && e.button == 1) // middle click, >IE9 + everyone else
+      ) {
+        window.open(url, '_blank');
+        return;
+      }
+
+      window.location = url;
+      stopRotating = true;
+      e.stopPropagation();
     }
 
     var mousePosition = function(e) {
       mouseEvent = e;
+//      var posX = mouseEvent.clientX;
+//      var posY = mouseEvent.clientY;
+//      var el = document.elementFromPoint(posX, posY);
+//
+//      if (el.tagName == "SPAN") {
+//        el.style.color = '#999999';
+//      }
     }
 
   </script>

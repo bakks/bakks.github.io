@@ -10,8 +10,8 @@
     var yOffset = canvasHeight / 2 - 20;
     var joints = 1;
     var scale = 20;
-    var linksStartRow = 6;
-    var linksCharOffset = 32;
+    var linksStartRow = 8;
+    var linksCharOffset = 65;
 
     var activeIco;
     var mouseEvent;
@@ -36,17 +36,13 @@
         url: 'https://twitter.com/pbbakkum'
       },
       {
-        text: '+1.757.812.2365',
-        url: 'tel:1-757-812-2365'
-      },
-      {
-        text: 'pbb7c@virginia.edu',
-        url: 'mailto:pbb7c@virginia.edu'
+        text: 'pbbakkum@gmail.com',
+        url: 'mailto:pbbakkum@gmail.com'
       }
     ]
 
-    var gradientStart = '0F75FF';
-    var gradientEnd = '0AFF6F';
+    var gradientStart = '8D54FF';
+    var gradientEnd = 'FF5471';
 
     var parseHex = function(x) {
       return [
@@ -97,8 +93,8 @@
        var prev = 0;
 
        for (var i = 0; i < canvasHeight; i++) {
-         var color = hexGradient(gradientStart, gradientEnd, i / canvasHeight * 1.4);
-         x.push('<span style="color:#' + color + '">')
+         var color = hexGradient(gradientStart, gradientEnd, i / canvasHeight * 3.0);
+         x.push('<span style="color:#' + color + '; text-shadow: 0.5px 0.5px #a0a0a0;">')
          x.push(str.substring(prev, prev + canvasWidth))
          x.push('</span><br>')
          prev += canvasWidth + 4;
@@ -191,15 +187,17 @@
     body {
       color: #999;
       font-family: Courier;
-      background-color: #222;
+      background-color: #ffffff;
       width: 100%;
       height: 100%;
+      font-size: 0.6em;
     }
     a {
-      color: white;
+      color: black;
       text-decoration: none;
       font-size:0.9em;
       letter-spacing: 0.16em;
+      text-shadow:none;
     }
     * {
       margin: 0px;

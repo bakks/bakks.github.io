@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <title>Peter Bakkum</title>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <script src="./target/ico-min.js" type="text/javascript"></script>
   <script type="text/javascript">
@@ -79,7 +80,7 @@
         var url = links[i]['url'];
 
         x.push(str.substring(prev, start));
-        x.push('<a href="' + url + '" onmousedown="mouseDown(event)" onmouseover="mouseOver()" onmouseout="mouseOut()">' + text + '</a>');
+        x.push('<a href="' + url + '" onmousedown="mouseDown(event)" onmouseover="mouseOver()" onmouseout="mouseOut()">' + text + '<\/a>');
         prev = start + text.length;
 
         start += rowCharWidth * 2;
@@ -96,7 +97,7 @@
          var color = hexGradient(gradientStart, gradientEnd, i / canvasHeight * 3.0);
          x.push('<span style="color:#' + color + '; text-shadow: 0.5px 0.5px #a0a0a0;">')
          x.push(str.substring(prev, prev + canvasWidth))
-         x.push('</span><br>')
+         x.push('<\/span><br>')
          prev += canvasWidth + 4;
        }
        return x.join('');
@@ -108,7 +109,7 @@
       str = colorRows(str);
       str = insertLinks(str);
       if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
-        str = str.replace(/[⠀]/g, '<span style="font-size:0.9em;letter-spacing:0.16em">&nbsp;</span>');
+        str = str.replace(/[⠀]/g, '<span style="font-size:0.9em;letter-spacing:0.16em">&nbsp;<\/span>');
       }
       document.body.innerHTML = str;
     }

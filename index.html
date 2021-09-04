@@ -6,13 +6,13 @@
   <script src="./target/ico-min.js" type="text/javascript"></script>
   <script type="text/javascript">
     var canvasWidth = 94;
-    var canvasHeight = 60;
+    var canvasHeight = 20;
     var xOffset = 50;
-    var yOffset = canvasHeight / 2 - 20;
+    var yOffset = canvasHeight / 2 - 2;
     var joints = 1;
     var scale = 20;
     var linksStartRow = 8;
-    var linksCharOffset = 65;
+    var linksCharOffset = 32;
 
     var activeIco;
     var mouseEvent;
@@ -94,8 +94,8 @@
        var prev = 0;
 
        for (var i = 0; i < canvasHeight; i++) {
-         var color = hexGradient(gradientStart, gradientEnd, i / canvasHeight * 3.0);
-         x.push('<span style="color:#' + color + '; text-shadow: 0.5px 0.5px #a0a0a0;">')
+         var color = hexGradient(gradientStart, gradientEnd, i / canvasHeight);
+         x.push('<span style="color:#' + color + ';">')
          x.push(str.substring(prev, prev + canvasWidth))
          x.push('<\/span><br>')
          prev += canvasWidth + 4;
@@ -191,14 +191,13 @@
       background-color: #ffffff;
       width: 100%;
       height: 100%;
-      font-size: 0.6em;
+      font-size: 0.8em;
     }
     a {
-      color: black;
+      color: #333333;
       text-decoration: none;
-      font-size:0.9em;
-      letter-spacing: 0.16em;
       text-shadow:none;
+      letter-spacing:0.08em;
     }
     * {
       margin: 0px;

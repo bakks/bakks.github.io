@@ -11,36 +11,11 @@
     var yOffset = canvasHeight / 2 - 2;
     var joints = 1;
     var scale = 20;
-    var linksStartRow = 8;
-    var linksCharOffset = 32;
 
     var activeIco;
     var mouseEvent;
     var mousedOver = false;
     var stopRotating = false;
-
-    var links = [
-      {
-        text: 'resumé',
-        url: 'https://www.dropbox.com/s/yhlph8nx7qye4mq/resume.pdf?dl=1'
-      },
-      {
-        text: 'github',
-        url: 'https://github.com/bakks',
-      },
-      {
-        text: 'linkedin',
-        url: 'https://linkedin.com/in/pbbakkum'
-      },
-      {
-        text: '@pbbakkum',
-        url: 'https://twitter.com/pbbakkum'
-      },
-      {
-        text: 'pbbakkum@gmail.com',
-        url: 'mailto:pbbakkum@gmail.com'
-      }
-    ]
 
     var gradientStart = '8D54FF';
     var gradientEnd = 'FF5471';
@@ -69,26 +44,6 @@
       return result[0].pad() + result[1].pad() + result[2].pad();
     }
 
-    var insertLinks = function(str) {
-      var x = [];
-      var prev = 0;
-      var rowCharWidth = str.search('<br>') + 4;
-      var start = rowCharWidth * linksStartRow + linksCharOffset;
-
-      for (var i in links) {
-        var text = links[i]['text'];
-        var url = links[i]['url'];
-
-        x.push(str.substring(prev, start));
-        x.push('<a href="' + url + '" onmousedown="mouseDown(event)" onmouseover="mouseOver()" onmouseout="mouseOut()">' + text + '<\/a>');
-        prev = start + text.length;
-
-        start += rowCharWidth * 2;
-      }
-      x.push(str.substring(prev, str.length));
-      return x.join('');
-    }
-
     var colorRows = function(str) {
        var x = [];
        var prev = 0;
@@ -107,11 +62,10 @@
       var str = activeIco.Render()
       str = str.replace(/(?:\r\n|\r|\n)/g, '<br>');
       str = colorRows(str);
-      str = insertLinks(str);
       if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
         str = str.replace(/[⠀]/g, '<span style="font-size:0.9em;letter-spacing:0.16em">&nbsp;<\/span>');
       }
-      document.body.innerHTML = str;
+      document.getElementById('canvas').innerHTML = str;
     }
 
     window.onload = function() {
@@ -173,39 +127,56 @@
 
     var mousePosition = function(e) {
       mouseEvent = e;
-//      var posX = mouseEvent.clientX;
-//      var posY = mouseEvent.clientY;
-//      var el = document.elementFromPoint(posX, posY);
-//
-//      if (el.tagName == "SPAN") {
-//        el.style.color = '#999999';
-//      }
     }
 
   </script>
 
   <style type="text/css">
     body {
-      color: #999;
-      font-family: Courier;
       background-color: #ffffff;
       width: 100%;
       height: 100%;
-      font-size: 0.8em;
+    }
+    #canvas {
+      font-size: 0.9em;
+      letter-spacing: -0.15em;
+      font-family: Braille;
+    }
+    #links {
+      margin-top: -11em;
+      margin-left: 2em;
+      line-height: 2em;
     }
     a {
-      color: #333333;
+      letter-spacing: 0.05em;
+      color: #333;
       text-decoration: none;
-      text-shadow:none;
-      letter-spacing:0.08em;
+      font-size: 0.8em;
+      text-shadow: none;
+      font-family: Courier, monospace;
+    }
+    a:hover {
+      text-decoration: underline;
     }
     * {
       margin: 0px;
       padding: 0px;
     }
+    @font-face {
+      font-family: Braille;
+      src: url(./Symbola.ttf);
+    }
   </style>
 </head>
 <body onmousemove="mousePosition(event)">
-&nbsp;
+  <div id="canvas">
+  </div>
+  <div id="links">
+    <a onmousedown="mouseDown(event)" onmouseover="mouseOver()" onmouseout="mouseOut()" href='https://www.dropbox.com/s/m8iuxt4raz8g9wn/resume.pdf?dl=0'>resumé</a><br/>
+    <a onmousedown="mouseDown(event)" onmouseover="mouseOver()" onmouseout="mouseOut()" href='https://github.com/bakks'>github</a><br/>
+    <a onmousedown="mouseDown(event)" onmouseover="mouseOver()" onmouseout="mouseOut()" href='https://linkedin.com/in/pbbakkum'>linkedin</a><br/>
+    <a onmousedown="mouseDown(event)" onmouseover="mouseOver()" onmouseout="mouseOut()" href='https://twitter.com/pbbakkum'>@pbbakkum</a><br/>
+    <a onmousedown="mouseDown(event)" onmouseover="mouseOver()" onmouseout="mouseOut()" href='mailto:pbbakkum@gmail.com'>pbbakkum@gmail.com</a><br/>
+  </div>
 </body>
 </html>

@@ -7,3 +7,4 @@ closure
 vendor
 src/github.com
 
+.DS_Store

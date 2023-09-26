@@ -9,57 +9,11 @@
   <meta property="og:url" content="https://pbbakkum.com/blog/20230927/index.html">
 
   <meta name="twitter:title" content="A single golden pattern: the story of Butterfish, an LLM-powered shell">
-  <meta name="twitter:description" content="Your Blog Post Description">
   <meta name="twitter:description" content="Butterfish is a tool that seamlessly adds AI prompting to the bash and zsh shells.">
   <meta name="twitter:image" content="https://pbbakkum.com/blog/20230927/shell.gif">
 
 
-  <style type="text/css">
-    body {
-      background-color: #faf8f8;
-      width: 100%;
-      height: 100%;
-      font-family: Times New Roman;
-      max-width: 40rem;
-      margin: 0 auto;
-      padding: 1.5rem;
-    }
-    img {
-      max-width: 98%;
-    }
-    a {
-      color: #333;
-      text-decoration: none;
-      text-shadow: none;
-      font-family: NType, Courier, monospace;
-    }
-    a:hover {
-      text-decoration: underline;
-    }
-    @font-face {
-      font-family: NTypeMono;
-      src: url(../NType82Mono-Regular.otf);
-    }
-    @font-face {
-      font-family: NType;
-      src: url(../NType82-Regular.otf);
-    }
-
-    h1,h2,h3 {
-      font-family: NType, sans-serif;
-    }
-
-    code {
-      font-family: NTypeMono, monospace;
-      font-size: 0.9em;
-      padding: 0.2em;
-      background-color: #333;
-      color: #faf8f8;
-    }
-    li {
-      list-style-type: square;
-    }
-  </style>
+  <link rel="stylesheet" href="../style.css" type="text/css" />
 </head>
 <body>
 <a href="http://pbbakkum.com">pbbakkum.com</a>
@@ -251,16 +205,16 @@ But I’m quite bullish on this space in general. In theory, software-focused ag
 </p>
 
 <p>
-In the immediate term, the approach of <a href="https://www.cursor.sh/">Cursor</a> and <a href="https://docs.sourcegraph.com/cody/overview">Sourcegraph Cody</a> seem to be the right architecture, the strategy being to closely support the software developer rather than replacing them.
+In the immediate term, the approach of <a href="https://www.cursor.sh/">Cursor</a> and <a href="https://docs.sourcegraph.com/cody/overview">Sourcegraph Cody</a> seem to be best, the strategy being to closely support the software developer rather than replacing them.
 </p>
 
 <h2>Why not a local model?</h2>
 <p>
-The most common feature request for Butterfish is to use a local model rather than OpenAI. A local model would allow prompting without internet and avoid transmitting potentially sensitive data to OpenAI. I’ve considered and experimented with local models but held off because of deployment complexity.
+The most common feature request for Butterfish is to use a local model rather than OpenAI. A local model would allow prompting without internet and avoid transmitting potentially sensitive data to OpenAI. I’ve considered and experimented with local models but held off because of deployment complexity and because I've tuned the prompts carefully on GPT-3.5/4. I'd rather deliver a narrower product that works great than an infinitely pluggable thing that works just ok.
 </p>
 
 <p>
-I value deployment simplicity very highly. You should be able to install Butterfish with a single command, configuration should be easy. While there are now many pathways to deploy open source models like Llama 2 locally, I haven’t yet seen anything that gives you an optimal install and configuration on MacOS and Linux. An ideal solution would be accessible to other processes via shared library and efficiently exploit local GPUs or the Apple Neural Engine with an optimally sized model for the local hardware. Someone should build this!
+I value deployment simplicity highly. You should be able to install Butterfish with a single command, configuration should be easy. While there are now many pathways to deploy open source models like Llama 2 locally, I haven’t yet seen anything that easily gives you an optimal install and configuration on both MacOS and Linux. An ideal solution would be accessible to other processes via shared library and efficiently exploit local GPUs or the Apple Neural Engine with an model sized for local hardware. Someone should build this!
 </p>
 
 <h2>In Conclusion</h2>

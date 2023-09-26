@@ -146,6 +146,7 @@
       margin-top: -11em;
       margin-left: 2em;
       line-height: 2em;
+      font-family: NType;
     }
     a {
       letter-spacing: 0.05em;
@@ -153,6 +154,9 @@
       text-decoration: none;
       font-size: 0.8em;
       text-shadow: none;
+      font-family: NTypeMono, Courier, monospace;
+    }
+    .toplink {
       font-family: Courier, monospace;
     }
     a:hover {
@@ -166,17 +170,35 @@
       font-family: Braille;
       src: url(./Symbola.ttf);
     }
+    @font-face {
+      font-family: NTypeMono;
+      src: url(./NType82Mono-Regular.otf);
+    }
+    @font-face {
+      font-family: NType;
+      src: url(./NType82-Regular.otf);
+    }
   </style>
 </head>
 <body onmousemove="mousePosition(event)">
   <div id="canvas">
   </div>
   <div id="links">
-    <a onmousedown="mouseDown(event)" onmouseover="mouseOver()" onmouseout="mouseOut()" href='https://www.dropbox.com/scl/fi/qrnectyf6kked38abl488/resume.pdf?dl=1&rlkey=dpj2je22eq7kjugdgr5zsz4ey'>resumé</a><br/>
-    <a onmousedown="mouseDown(event)" onmouseover="mouseOver()" onmouseout="mouseOut()" href='https://github.com/bakks'>github</a><br/>
-    <a onmousedown="mouseDown(event)" onmouseover="mouseOver()" onmouseout="mouseOut()" href='https://linkedin.com/in/pbbakkum'>linkedin</a><br/>
-    <a onmousedown="mouseDown(event)" onmouseover="mouseOver()" onmouseout="mouseOut()" href='https://twitter.com/pbbakkum'>@pbbakkum</a><br/>
-    <a onmousedown="mouseDown(event)" onmouseover="mouseOver()" onmouseout="mouseOut()" href='mailto:pbbakkum@gmail.com'>pbbakkum@gmail.com</a><br/>
+    <a class="toplink" onmousedown="mouseDown(event)" onmouseover="mouseOver()" onmouseout="mouseOut()" href='https://www.dropbox.com/scl/fi/qrnectyf6kked38abl488/resume.pdf?dl=1&rlkey=dpj2je22eq7kjugdgr5zsz4ey'>resumé</a><br/>
+    <a class="toplink" onmousedown="mouseDown(event)" onmouseover="mouseOver()" onmouseout="mouseOut()" href='https://github.com/bakks'>github</a><br/>
+    <a class="toplink" onmousedown="mouseDown(event)" onmouseover="mouseOver()" onmouseout="mouseOut()" href='https://linkedin.com/in/pbbakkum'>linkedin</a><br/>
+    <a class="toplink" onmousedown="mouseDown(event)" onmouseover="mouseOver()" onmouseout="mouseOut()" href='https://twitter.com/pbbakkum'>@pbbakkum</a><br/>
+    <a class="toplink" onmousedown="mouseDown(event)" onmouseover="mouseOver()" onmouseout="mouseOut()" href='mailto:pbbakkum@gmail.com'>pbbakkum@gmail.com</a><br/>
+    <br/>
+    <br/>
+    <h3>Recent Projects</h3>
+    <a href="https://butterfi.sh">Butterfish</a> - A shell with AI superpowers
+    <br/>
+    <a href="https://github.com/bakks/poptop">Poptop</a> - A modern top command
+    <br/>
+    <br/>
+    <h3>Blog Posts</h3>
+    2023-09-27&nbsp;&nbsp;&nbsp; <a href="./blog/20230927">A single golden pattern: the story of Butterfish, an LLM-powered shell</a><br/>
   </div>
 </body>
 </html>

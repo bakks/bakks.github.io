@@ -50,7 +50,7 @@
 
 <p>A couple problems here:
 <ul>
-  <li>I’m writing a bunch of shell commands, GPT isn’t helping me with that. Surely we can find a better workflow than cmd-tabbing to a browser and copy/pasting.</li>
+  <li>I’m writing a bunch of shell commands, Copilot isn’t helping me with that. Surely we can find a better workflow than cmd-tabbing to a browser and copy/pasting.</li>
   <li>Even with Copilot I found myself asking more general questions in ChatGPT, then copy/pasting stuff back and forth. Questions like “how do I do X in golang?”. Maybe we can even get GPT-4 to edit the code more directly?</li>
 </ul>
 
@@ -59,30 +59,30 @@
 
 
 <h3>Basic Prompting</h3>
-<p>First let’s get basic prompting working, i.e. type in a prompt on the command line, send that to OpenAI, stream the response back. You can do “butterfish prompt ‘is this thing working?’” and you can even pipe into that command like “echo ‘testing’ | butterfish prompt’”. Now I can prompt directly from a tmux pane!</p>
+<p>First let’s get basic prompting working, i.e. type in a prompt on the command line, send that to OpenAI, stream the response back. You can do <code>butterfish prompt 'is this thing working?'</code> and you can even pipe into that command like <code>echo 'testing' | butterfish prompt</code>. Now I can prompt directly from a tmux pane!</p>
 
 <a href="./image4.png"><img src="./image4.png"/></a>
 
 <p>A few drawbacks are immediately obvious: often the model is returning a shell command, but then I need to type the command myself. Also, if the previous response is close to what I want there isn’t a good way to ask for refinement.</p>
 
 <h3>Functionality</h3>
-<p>Let’s define more specific functionality: “butterfish summarize [file]”, “butterfish gencmd [prompt]”. Maybe the right way to attack these problems is a suite of tools.</p>
+<p>Let’s define more specific functionality: <code>butterfish summarize [file]</code>, <code>butterfish gencmd [prompt]</code>. Maybe the right way to attack these problems is a suite of tools.</p>
 
 <p>The summarize functionality boils down the semantic information in a text file to something shorter. If the file is longer than the model’s context window, things get harder; it chunks the file, gets a list of facts from each chunk, then summarizes that in a rollup, with a predictable degradation in quality when it has to decide which facts are most important.</p>
 
-<p>The gencmd command generates only a runnable shell command given a prompt of what you want to do. This is pipeable, e.g. you could pipe it to “bash” and execute immediately, but you probably only want to do that in certain cases.</p>
+<p>The gencmd command generates only a runnable shell command given a prompt of what you want to do. This is pipeable, e.g. you could pipe it to <code>bash</code> and execute immediately, but you probably only want to do that in certain cases.</p>
 
 <a href="./image8.png"><img src="./image8.png"/></a>
 
-<p>Summarize and Gencmd are useful but you have to remember they exist, they have the same problems as simple prompting: often you want to iterate on a thought, and when you do that the model should be able to see what it gave you before.</p>
+<p>Summarize and Gencmd are useful but you have to remember they exist, they have the same problems as simple prompting: often you want to iterate on a thought and you want the model to see what it gave you before.</p>
 
 <h3>Embeddings</h3>
-<p>Let’s play with embeddings. A lot of AI applications let you search over your files/data or “chat with your data”, using embeddings to search over your data and then returning you specific chunks right when you need them. This is usually backed by a vector store, i.e. you chunk your data, embed it, put it in the vector db, search it later. But it turns out that unless you have a ton of vectors, like maybe in the hundreds of thousands, a vector db is overkill to some degree. So my next experiment was to write tools to create embeddings over local files, then cache those embeddings to disk, so that you could search them later. For example you can run “butterfish index ./mydir” to create embeddings of all text files in that directory.</p>
+<p>Let’s play with embeddings. A lot of AI applications let you search over your files/data or “chat with your data”, using embeddings to search over your data and then returning you specific chunks right when you need them. This is usually backed by a vector store, i.e. you chunk your data, embed it, put it in the vector db, search it later. But it turns out that unless you have a ton of vectors, like maybe in the hundreds of thousands, a vector db is overkill to some degree. So my next experiment was to write tools to create embeddings over local files, then cache those embeddings to disk, so that you could search them later. For example you can run <code>butterfish index ./mydir</code> to create embeddings of all text files in that directory.</p>
 
 <p>A few lessons: first, embeddings are not magic! This is just a new strategy for the old problem of text search, and text search is only good when you tune it a lot. Next, embeddings over code demand a different model than over text, otherwise they’re just not that great. So we ended up with some nice tools for searching local files, but there’s nothing super useful here.</p>
 
 <h2>A single golden pattern</h2>
-<p>Let’s review: we’re trying to use AI more effectively from the command line, and we have a few tools we can use. They have some drawbacks: when they give output it’s hard to immediately use it, and you can’t give feedback, you have to re-ask the question. It’s annoying to run a specific command (i.e. “butterfish prompt ‘[prompt]’”) every time you want to talk to the AI.</p>
+<p>Let’s review: we’re trying to use AI more effectively from the command line, and we have a few tools we can use. They have some drawbacks: when they give output it’s hard to immediately use it, and you can’t give feedback, you have to re-ask the question. It’s annoying to run a specific command (i.e. <code>butterfish prompt '[prompt]'</code>) every time you want to talk to the AI.</p>
 
 <p>Time for a new theory: maybe we should add AI to the shell itself. Here are the features we want:
 <ul>
@@ -101,7 +101,7 @@ What does this theory look like when implemented?
 <p>
 Here’s an example of using butterfish shell, it demonstrates several features of this pattern:
 <ul>
-  <li><code>butterfish shell -v -m gpt-4</code> – This starts Butterfish Shell using GPT-4 as the prompting model, notice that when you run this the command line prompt (“~ >”) looks the same except for the fish now swimming in it.</li>
+  <li><code>butterfish shell -v -m gpt-4</code> – This starts Butterfish Shell using GPT-4 as the prompting model. It's the mostly the same, i.e. my custom prompt is still there! Butterfish adds the fish emoji to remind you it's active.</li>
   <li><code>ls *.go</code> – this is just a normal shell command.</li>
   <li><code>How do I do that recursively?</code> – with this prompt the LLM is interpreting the previous command and error.</li>
   <li><code>What about with grep?</code> – now we’re iterating on a previous LLM answer.</li>
@@ -124,13 +124,13 @@ Here’s an example of using butterfish shell, it demonstrates several features 
 </ul>
 </p>
 
-<p>I went with that last option and wrote a “shell wrapper” that you run with the command “butterfish shell”. How does this work?</p>
+<p>I went with that last option and wrote a “shell wrapper” that you run with the command <code>butterfish shell</code>. How does this work?</p>
 
 <a href="./image6.png"><img src="./image6.png"/></a>
 
 <p>
 <ul>
-  <li>When you run “butterfish shell” in your terminal it starts an instance of your shell (e.g. /bin/zsh), then intercepts the shell’s input and output. This is why we call it a shell wrapper.</li>
+  <li>When you run <code>butterfish shell</code> in your terminal it starts an instance of your shell (e.g. <code>/bin/zsh</code>), then intercepts the shell’s input and output. This is why we call it a shell wrapper.</li>
   <li>Keyboard input and shell output are buffered in Butterfish’s in-memory history.</li>
   <li>Most input is forwarded directly to the shell, but when you start a prompt with a Capital Letter, that input is kept in Butterfish itself.</li>
   <li>When you submit a prompt Butterfish will call the OpenAI ChatGPT API, and stream the results back to the terminal (not to the shell).</li>
@@ -139,7 +139,7 @@ Here’s an example of using butterfish shell, it demonstrates several features 
 
 <p>So Butterfish Shell can see the child shell’s i/o and do intelligent things. For example, this architecture enables AI-powered autocomplete by handling it within the Butterfish Shell component, until the user applies it, and it’s then sent to the System Shell. This architecture also means that you don’t have to change your existing bash or zsh setup, and hotkeys like Ctrl-R continue to work because we’re just forwarding on the System Shell’s i/o.</p>
 
-<p>This pattern requires keeping track of shell history, including your commands, the command output, the LLM prompts, and the LLM output. The <a href="https://platform.openai.com/docs/api-reference/chat/object">ChatGPT API</a> models context as a history of a conversation between a human role and an assistant role, this API matches our shell history concept fairly well. Perhaps an insight here is that the model can effectively interpret another type of history (e.g. shell i/o) as part of the conversation. Here’s a debug view of Butterfish, showing roughly what an API request and response looks like.</p>
+<p>This pattern requires keeping track of shell history, including your commands, the command output, the LLM prompts, and the LLM output. The <a href="https://platform.openai.com/docs/api-reference/chat/object">ChatGPT API</a> treats context as a history of a conversation between a human role and an assistant role, this API matches our shell history concept fairly well. Perhaps an insight here is that the model can effectively interpret another type of history (shell i/o) as part of the conversation. Here’s a debug view of Butterfish, showing roughly what an API request and response looks like.</p>
 
 <a href="./image2.png"><img src="./image2.png"/></a>
 
@@ -150,13 +150,12 @@ Here’s an example of using butterfish shell, it demonstrates several features 
 <h2>There’s someone else in the room</h2>
 <p>Let's say you have an existing product and you want to add AI, what do you do? Here’s a mental model for LLM integration: “there’s someone else in the room”.</p>
 
-<p>Previously the room had the app and the user in it, now you’re adding another ‘person’. What does that person know? Does it see everything the user sees? What happens when that person says something? When do you hand over control to the person, when do they give it back? Maybe this is terribly abstract, but when writing Butterfish it was helpful to think of the AI’s role as “someone looking over my shoulder”.</p>
+<p>Previously the room had the app and the user in it, now you’re adding another ‘person’. The AI model accepts free-text input and output, and can take control, <em>like another person</em>. What does that person know? Do they see everything the user sees? What happens when that person says something? When do you hand over control to the person, when do they give it back? Maybe this is terribly abstract, but with Butterfish it was helpful to think of the AI’s role as “someone looking over my shoulder”.</p>
 
 <h2>Context Engineering</h2>
-<p>If you write software with LLMs you’ll quickly encounter “prompt engineering”, i.e. constructing your prompt to maximize the quality of the model’s output. Adding a clause like “think step by step in your answer” might make a huge difference. You may also want to include context in your prompt like the chat history, a document, search results, etc. In Butterfish this is the shell history.</p>
-
-<p>This context is part of the prompt, but engineering that context, such as searching a vector store, is distinct enough that I think of it as its own problem. This “context engineering” is the difference in what the LLM knows outside of its training data, and may be the hard part of building LLM applications. If you’re generating code that should go inside your codebase, for example, it’s critically important to give the model the right context in terms of what the rest of your code looks like, what libraries and interfaces it should use, etc. The critical constraint, of course, is the model’s context window size. If you can’t hand over everything in the context, you need to prioritize aggressively.</p>
-
+<p>If you write software with LLMs you’ll quickly encounter “prompt engineering”, i.e. constructing your prompt to maximize the quality of the model’s output. Adding a clause like “think step by step in your answer” might make a huge difference. You may also want to include context in your prompt like the chat history, a document, search results, etc.
+This context is part of the prompt, but engineering that context, such as searching a vector store, is distinct enough that I think of it as its own problem. This “context engineering” is the difference in what the LLM knows outside of its training data.
+</p>
 <p>
 Some reasons Butterfish works well:
 <ul>
@@ -171,15 +170,19 @@ Some reasons Butterfish works well:
 Here’s an example: we try to run a program, we see an error, we print the file, then we ask a question about it all (“why did that code produce that error”). Printing the file puts the file in the context, in other words the user is implicitly engineering the LLM context in a way that feels natural. Of course this doesn’t work the same way if the code is thousands of lines long, but that’s natural in the sense that if the text doesn’t fit on a single terminal screen then it also doesn’t fit into LLM context.
 </p>
 
+<p>
+Figuring out the right context is the hard part of a lot of LLM apps. For example, If you’re generating code in an existing codebase you'll need to figure out what code to show the model, otherwise how will it know about your functions or classes. The critical constraint, of course, is the model’s context window size, which means you need to find the right code to hand it. Finding the right code to solve a problem may be just as hard as generating new code, which matches my experience writing code as a human!
+</p>
+
 <h2>Agents require a new framework</h2>
 <p>
-Butterfish includes an agentic mode that allows the LLM to generate and execute shell commands in pursuit of a goal that you give it. You activate this mode by starting a command with a capital letter, for example “!Find the largest file in this directory”. You can let it execute commands without confirmation by prefixing with “!!” instead of “!”.
+Butterfish includes an agentic mode that allows the LLM to generate and execute shell commands in pursuit of a goal that you give it. You activate this mode by starting a command with a capital letter, for example <code>!Find the largest file in this directory</code>. You can let it execute commands without confirmation by prefixing with <code>!!</code> instead of <code>!</code>.
 </p>
 
 <a href="./image10.png"><img src="./image10.png"/></a>
 
 <p>
-It’s really cool when this strategy works, and when it doesn’t work it has yet to delete all my local files. If the model suggests a command that doesn’t work, it will iterate on that command to find a new one, that’s pretty cool.
+It’s really cool when this strategy works, and when it doesn’t work it doesn't delete all your files (at least I've never seen that, good luck out there). If the model suggests a command that doesn’t work, it will iterate on that command to find a new one, that’s pretty cool.
 </p>
 
 <p>

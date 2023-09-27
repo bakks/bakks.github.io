@@ -1,0 +1,9 @@
+{
+  "redirects": [
+    {
+      "source": "/blog/20230927",
+      "destination": "/blog/20230927/",
+      "permanent": true
+    }
+  ]
+}

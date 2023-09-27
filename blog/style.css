@@ -44,3 +44,9 @@ code {
 li {
   list-style-type: square;
 }
+p {
+  text-indent: 1em;
+}
+.subheading {
+  font-family: NTypeMono, sans-serif;
+}

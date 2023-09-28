@@ -10,20 +10,16 @@ body {
 }
 @media only screen and (max-width: 50rem) {
   body {
-    margin: 0px;
+    margin: 0;
     font-size: 1.2rem;
-    padding: 0.5rem;
-  }
-}
-@media only screen and (max-width: 600px) {
-  body {
-    margin: 0px;
-    font-size: 1.2rem;
-    padding: 0.5rem;
+    padding: 1rem;
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
   }
 }
 img {
-  max-width: 98%;
+  max-width: 95%;
 }
 a {
   color: #333;

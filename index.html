@@ -1,204 +1,271 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-  <title>Peter Bakkum</title>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <script src="./target/ico-min.js" type="text/javascript"></script>
-  <script type="text/javascript">
-    var canvasWidth = 94;
-    var canvasHeight = 20;
-    var xOffset = 50;
-    var yOffset = canvasHeight / 2 - 2;
-    var joints = 1;
-    var scale = 20;
+  <head>
+    <title>Peter Bakkum</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <script src="./target/ico-min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+      var canvasWidth = 94;
+      var canvasHeight = 20;
+      var xOffset = 50;
+      var yOffset = canvasHeight / 2 - 2;
+      var joints = 1;
+      var scale = 20;
 
-    var activeIco;
-    var mouseEvent;
-    var mousedOver = false;
-    var stopRotating = false;
+      var activeIco;
+      var mouseEvent;
+      var mousedOver = false;
+      var stopRotating = false;
 
-    var gradientStart = '8D54FF';
-    var gradientEnd = 'FF5471';
+      var gradientStart = "8D54FF";
+      var gradientEnd = "FF5471";
 
-    var parseHex = function(x) {
-      return [
-        parseInt(x.substring(0,2), 16),
-        parseInt(x.substring(2,4), 16),
-        parseInt(x.substring(4,6), 16),
-      ]
-    }
+      var parseHex = function (x) {
+        return [
+          parseInt(x.substring(0, 2), 16),
+          parseInt(x.substring(2, 4), 16),
+          parseInt(x.substring(4, 6), 16),
+        ];
+      };
 
-    Number.prototype.pad = function(size) {
-      var s = this.toString(16);
-      while (s.length < (size || 2)) {s = "0" + s;}
-      return s;
-    }
-
-    var hexGradient = function(start, end, position) {
-      var startRGB = parseHex(start);
-      var endRGB = parseHex(end);
-      var result = [];
-      for (var i = 0; i < 3; i++) {
-        result[i] = Math.round(startRGB[i] + (endRGB[i] - startRGB[i]) * position);
-      }
-      return result[0].pad() + result[1].pad() + result[2].pad();
-    }
-
-    var colorRows = function(str) {
-       var x = [];
-       var prev = 0;
-
-       for (var i = 0; i < canvasHeight; i++) {
-         var color = hexGradient(gradientStart, gradientEnd, i / canvasHeight);
-         x.push('<span style="color:#' + color + ';">')
-         x.push(str.substring(prev, prev + canvasWidth))
-         x.push('<\/span><br>')
-         prev += canvasWidth + 4;
-       }
-       return x.join('');
-    }
-
-    var render = function() {
-      var str = activeIco.Render()
-      str = str.replace(/(?:\r\n|\r|\n)/g, '<br>');
-      str = colorRows(str);
-      if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
-        str = str.replace(/[⠀]/g, '<span style="font-size:0.9em;letter-spacing:0.16em">&nbsp;<\/span>');
-      }
-      document.getElementById('canvas').innerHTML = str;
-    }
-
-    window.onload = function() {
-      activeIco = ico.New(canvasWidth, canvasHeight, xOffset, yOffset, joints, scale);
-      render()
-
-      window.setInterval(function() {
-        if (!mouseEvent) return;
-
-        var posX = mouseEvent.clientX;
-        var posY = mouseEvent.clientY;
-
-        if (document.elementFromPoint(posX, posY).tagName != 'A') {
-          mousedOver = false;
+      Number.prototype.pad = function (size) {
+        var s = this.toString(16);
+        while (s.length < (size || 2)) {
+          s = "0" + s;
         }
+        return s;
+      };
 
-        var xChange = (posX - 400) / 30000;
-        var yChange = (posY) / 30000 * -1;
-
-        xChange *= -1;
-        yChange *= -1;
-
-        if (mousedOver) {
-          xChange *= -1 * 5;
-          yChange *= -1 * 5;
+      var hexGradient = function (start, end, position) {
+        var startRGB = parseHex(start);
+        var endRGB = parseHex(end);
+        var result = [];
+        for (var i = 0; i < 3; i++) {
+          result[i] = Math.round(
+            startRGB[i] + (endRGB[i] - startRGB[i]) * position
+          );
         }
+        return result[0].pad() + result[1].pad() + result[2].pad();
+      };
 
-        if (!stopRotating) {
-          activeIco.RotateX(xChange);
-          activeIco.RotateY(yChange);
+      var colorRows = function (str) {
+        var x = [];
+        var prev = 0;
+
+        for (var i = 0; i < canvasHeight; i++) {
+          var color = hexGradient(gradientStart, gradientEnd, i / canvasHeight);
+          x.push('<span style="color:#' + color + ';">');
+          x.push(str.substring(prev, prev + canvasWidth));
+          x.push("<\/span><br>");
+          prev += canvasWidth + 4;
         }
+        return x.join("");
+      };
+
+      var render = function () {
+        var str = activeIco.Render();
+        str = str.replace(/(?:\r\n|\r|\n)/g, "<br>");
+        str = colorRows(str);
+        if (navigator.userAgent.toLowerCase().indexOf("firefox") > -1) {
+          str = str.replace(
+            /[⠀]/g,
+            '<span style="font-size:0.9em;letter-spacing:0.16em">&nbsp;<\/span>'
+          );
+        }
+        document.getElementById("canvas").innerHTML = str;
+      };
+
+      window.onload = function () {
+        activeIco = ico.New(
+          canvasWidth,
+          canvasHeight,
+          xOffset,
+          yOffset,
+          joints,
+          scale
+        );
         render();
-      }, 75)
-    }
 
-    var mouseOver = function() {
-      mousedOver = true;
-    }
+        window.setInterval(function () {
+          if (!mouseEvent) return;
 
-    var mouseOut = function() {
-      mousedOver = false;
-    }
+          var posX = mouseEvent.clientX;
+          var posY = mouseEvent.clientY;
 
-    var mouseDown = function(e) {
-      url = e.target.getAttribute('href');
-      if (e.ctrlKey ||
-        e.shiftKey ||
-        e.metaKey || // apple
-        (e.button && e.button == 1) // middle click, >IE9 + everyone else
-      ) {
-        window.open(url, '_blank');
-        return;
+          if (document.elementFromPoint(posX, posY).tagName != "A") {
+            mousedOver = false;
+          }
+
+          var xChange = (posX - 400) / 30000;
+          var yChange = (posY / 30000) * -1;
+
+          xChange *= -1;
+          yChange *= -1;
+
+          if (mousedOver) {
+            xChange *= -1 * 5;
+            yChange *= -1 * 5;
+          }
+
+          if (!stopRotating) {
+            activeIco.RotateX(xChange);
+            activeIco.RotateY(yChange);
+          }
+          render();
+        }, 75);
+      };
+
+      var mouseOver = function () {
+        mousedOver = true;
+      };
+
+      var mouseOut = function () {
+        mousedOver = false;
+      };
+
+      var mouseDown = function (e) {
+        url = e.target.getAttribute("href");
+        if (
+          e.ctrlKey ||
+          e.shiftKey ||
+          e.metaKey || // apple
+          (e.button && e.button == 1) // middle click, >IE9 + everyone else
+        ) {
+          window.open(url, "_blank");
+          return;
+        }
+
+        window.location = url;
+        stopRotating = true;
+        e.stopPropagation();
+      };
+
+      var mousePosition = function (e) {
+        mouseEvent = e;
+      };
+    </script>
+
+    <style type="text/css">
+      body {
+        background-color: #ffffff;
+        width: 100%;
+        height: 100%;
+        font-family: NTypeMono, Courier, monospace;
       }
-
-      window.location = url;
-      stopRotating = true;
-      e.stopPropagation();
-    }
-
-    var mousePosition = function(e) {
-      mouseEvent = e;
-    }
-
-  </script>
-
-  <style type="text/css">
-    body {
-      background-color: #ffffff;
-      width: 100%;
-      height: 100%;
-    }
-    #canvas {
-      font-size: 0.9em;
-      letter-spacing: -0.15em;
-      font-family: Braille;
-    }
-    #links {
-      margin-top: -11em;
-      margin-left: 2em;
-      line-height: 2em;
-      font-family: NType;
-    }
-    a {
-      letter-spacing: 0.05em;
-      color: #333;
-      text-decoration: none;
-      font-size: 0.8em;
-      text-shadow: none;
-      font-family: NTypeMono, Courier, monospace;
-    }
-    .toplink {
-      font-family: Courier, monospace;
-    }
-    a:hover {
-      text-decoration: underline;
-    }
-    * {
-      margin: 0px;
-      padding: 0px;
-    }
-    @font-face {
-      font-family: Braille;
-      src: url(./Symbola.ttf);
-    }
-    @font-face {
-      font-family: NTypeMono;
-      src: url(./NType82Mono-Regular.otf);
-    }
-    @font-face {
-      font-family: NType;
-      src: url(./NType82-Regular.otf);
-    }
-  </style>
-</head>
-<body onmousemove="mousePosition(event)">
-  <div id="canvas">
-  </div>
-  <div id="links">
-    <a class="toplink" onmousedown="mouseDown(event)" onmouseover="mouseOver()" onmouseout="mouseOut()" href='./resume.pdf' target="_blank">resumé</a><br/>
-    <a class="toplink" onmousedown="mouseDown(event)" onmouseover="mouseOver()" onmouseout="mouseOut()" href='https://github.com/bakks'>github</a><br/>
-    <a class="toplink" onmousedown="mouseDown(event)" onmouseover="mouseOver()" onmouseout="mouseOut()" href='https://linkedin.com/in/pbbakkum'>linkedin</a><br/>
-    <a class="toplink" onmousedown="mouseDown(event)" onmouseover="mouseOver()" onmouseout="mouseOut()" href='https://twitter.com/pbbakkum'>@pbbakkum</a><br/>
-    <a class="toplink" onmousedown="mouseDown(event)" onmouseover="mouseOver()" onmouseout="mouseOut()" href='mailto:pbbakkum@gmail.com'>pbbakkum@gmail.com</a><br/>
-    <br/>
-    <br/>
-    <h3>Recent Projects</h3>
-    <a href="https://butterfi.sh">Butterfish</a> - A shell with AI superpowers
-    <br/>
-    <a href="https://github.com/bakks/poptop">Poptop</a> - A modern top command
-    <br/>
-    <br/>
-    <h3>Blog Posts</h3>
-    2023-09-27&nbsp;&nbsp;&nbsp; <a href="./blog/20230927/">A single golden pattern: the story of Butterfish, an LLM-powered shell</a><br/>
-  </div>
-</body>
+      #canvas {
+        font-size: 0.9em;
+        letter-spacing: -0.15em;
+        font-family: Braille;
+      }
+      #links {
+        margin-top: -11em;
+        margin-left: 2em;
+        line-height: 2em;
+        font-size: 0.9em;
+        color: #333;
+      }
+      a {
+        text-decoration: none;
+        text-shadow: none;
+        color: inherit;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      * {
+        margin: 0px;
+        padding: 0px;
+      }
+      h3 {
+        font-family:
+          SF Pro Display,
+          SF Pro Icons,
+          Helvetica Neue,
+          Helvetica,
+          Arial,
+          sans-serif;
+        font-weight: 400;
+      }
+      @font-face {
+        font-family: Braille;
+        src: url(./Symbola.ttf);
+      }
+      @font-face {
+        font-family: NTypeMono;
+        src: url(./NType82Mono-Regular.otf);
+      }
+      @font-face {
+        font-family: NType;
+        src: url(./NType82-Regular.otf);
+      }
+    </style>
+  </head>
+  <body onmousemove="mousePosition(event)">
+    <div id="canvas"></div>
+    <div id="links">
+      <a
+        class="toplink"
+        onmousedown="mouseDown(event)"
+        onmouseover="mouseOver()"
+        onmouseout="mouseOut()"
+        href="./resume.pdf"
+        target="_blank"
+        >resumé</a
+      ><br />
+      <a
+        class="toplink"
+        onmousedown="mouseDown(event)"
+        onmouseover="mouseOver()"
+        onmouseout="mouseOut()"
+        href="https://github.com/bakks"
+        >github</a
+      ><br />
+      <a
+        class="toplink"
+        onmousedown="mouseDown(event)"
+        onmouseover="mouseOver()"
+        onmouseout="mouseOut()"
+        href="https://linkedin.com/in/pbbakkum"
+        >linkedin</a
+      ><br />
+      <a
+        class="toplink"
+        onmousedown="mouseDown(event)"
+        onmouseover="mouseOver()"
+        onmouseout="mouseOut()"
+        href="https://twitter.com/pbbakkum"
+        >@pbbakkum</a
+      ><br />
+      <a
+        class="toplink"
+        onmousedown="mouseDown(event)"
+        onmouseover="mouseOver()"
+        onmouseout="mouseOut()"
+        href="mailto:pbbakkum@gmail.com"
+        >pbbakkum@gmail.com</a
+      ><br />
+      <br />
+      <br />
+      <h3>Recent Projects</h3>
+      <a href="https://github.com/bakks/butterfish.nvim"
+        >butterfish.nvim :: Neovim plugin for fluent coding with language
+        models</a
+      >
+      <br />
+      <a href="https://butterfi.sh"
+        >Butterfish :: A shell with AI superpowers</a
+      >
+      <br />
+      <a href="https://github.com/bakks/poptop"
+        >Poptop :: A modern top command</a
+      >
+      <br />
+      <br />
+      <h3>Blog Posts</h3>
+      <a href="./blog/20230927/">
+        2023-09-27 :: A single golden pattern: the story of Butterfish, an
+        LLM-powered shell</a
+      ><br />
+    </div>
+  </body>
 </html>

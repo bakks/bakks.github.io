@@ -20,6 +20,7 @@ body {
 }
 img {
   max-width: 95%;
+  border-radius: 0.2em;
 }
 a {
   color: #333;
@@ -41,23 +42,30 @@ a:hover {
 
 h1,
 h2,
-h3 {
-  font-family: NType, sans-serif;
+h3,
+.subheading {
+  font-family:
+    SF Pro Display,
+    SF Pro Icons,
+    Helvetica Neue,
+    Helvetica,
+    Arial,
+    sans-serif;
+  font-weight: 400;
 }
 
 code {
   font-family: NTypeMono, monospace;
   font-size: 0.9em;
-  padding: 0.1em;
-  background-color: #333;
-  color: #faf8f8;
+  padding: 0em 0.3em 0.1em 0.3em; /* Increased padding-top for higher background */
+  border: 1px solid #ccc;
+  border-radius: 0.2em;
+  vertical-align: top; /* Centers text vertically */
 }
 li {
   list-style-type: square;
 }
 p {
   text-indent: 1em;
-}
-.subheading {
-  font-family: NTypeMono, sans-serif;
+  line-height: 1.4em;
 }
